@@ -9,6 +9,7 @@
         }
     ],
     "require": {
+        "php": ">=5.4",
         "guzzle/guzzle": "~3.9",
         "netresearch/jsonmapper": "~0.4"
     },
