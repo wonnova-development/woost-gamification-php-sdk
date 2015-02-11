@@ -1,0 +1,12 @@
+{
+    "name": "wonnova/sdk",
+    "description": "Wonnova SDK for PHP. Use Wonnova's API directly from your PHP projects",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wonnova gamification",
+            "email": "hello@wonnova.com"
+        }
+    ],
+    "require": {}
+}
