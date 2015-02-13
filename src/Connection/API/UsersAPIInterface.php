@@ -10,6 +10,10 @@ use Wonnova\SDK\Model\User;
  */
 interface UsersAPIInterface
 {
+    const USERS_ROUTE = '/users';
+    const USER_ROUTE = '/users?userId=%userId%';
+    const CREATE_USER_ROUTE = '/users/%userId%';
+
     /**
      * Returns users list
      *

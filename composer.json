@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.4",
-        "guzzle/guzzle": "~3.9",
+        "guzzlehttp/guzzle": "~5.0",
         "netresearch/jsonmapper": "~0.4",
         "zendframework/zend-json": "~2.3"
     },
