@@ -1,6 +1,8 @@
 <?php
 namespace Wonnova\SDK\Connection;
 
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Serializer;
 use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\URIUtils;
@@ -12,7 +14,7 @@ use GuzzleHttp\Client as GuzzleClient;
  * @author Wonnova
  * @link http://www.wonnova.com
  */
-class Client extends GuzzleClient implements ClientInterface
+class Client implements ClientInterface
 {
     const AUTH_ROUTE = '/auth';
     const USER_AGENT = 'wonnova-php-sdk';
@@ -21,6 +23,14 @@ class Client extends GuzzleClient implements ClientInterface
      * @var CredentialsInterface
      */
     protected $credentials;
+    /**
+     * @var GuzzleClient
+     */
+    protected $httpClient;
+    /**
+     * @var Serializer
+     */
+    protected $serializer;
     /**
      * @var TokenInterface
      */
@@ -31,30 +41,48 @@ class Client extends GuzzleClient implements ClientInterface
     protected $language;
 
     /**
+     * @param GuzzleClient $httpClient
+     * @param Serializer $serializer
      * @param CredentialsInterface $credentials
      * @param $language
      */
-    public function __construct(CredentialsInterface $credentials, $language)
-    {
-        parent::__construct([
-            'base_url' => sprintf('%s/rest', URIUtils::HOST),
-            'defaults' => [
-                'headers' => [
-                    'User-Agent' => self::USER_AGENT
-                ]
-            ]
-        ]);
-
+    public function __construct(
+        GuzzleClient $httpClient,
+        Serializer $serializer,
+        CredentialsInterface $credentials,
+        $language
+    ) {
+        $this->httpClient = $httpClient;
+        $this->serializer = $serializer;
         $this->credentials = $credentials;
         $this->language = $language;
     }
 
-    protected function connect()
+    /**
+     * Creates a new Client with provided Credentials and language
+     *
+     * @param CredentialsInterface $credentials
+     * @param string $language
+     * @return Client
+     */
+    public static function factory(CredentialsInterface $credentials, $language = 'es')
     {
-
+        return new Client(
+            new GuzzleClient([
+                'base_url' => sprintf('%s/rest', URIUtils::HOST),
+                'defaults' => [
+                    'headers' => [
+                        'User-Agent' => self::USER_AGENT
+                    ]
+                ]
+            ]),
+            new Serializer([], [new JsonEncoder()]),
+            $credentials,
+            $language
+        );
     }
 
-    protected function performRequest()
+    protected function connect()
     {
 
     }
@@ -66,7 +94,8 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getUsers()
     {
-        // TODO: Implement getUsers() method.
+        $response = $this->send($this->createRequest('GET', self::USERS_ROUTE));
+        return $this->mapper->mapArray($response->getBody(), [], '');
     }
 
     /**
