@@ -1,6 +1,7 @@
 <?php
 namespace Wonnova\SDK\Connection;
 
+use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Model\User;

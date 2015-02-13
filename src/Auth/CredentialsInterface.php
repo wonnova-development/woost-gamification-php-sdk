@@ -1,5 +1,5 @@
 <?php
-namespace Wonnova\SDK\Connection;
+namespace Wonnova\SDK\Auth;
 
 /**
  * Interface CredentialsInterface
