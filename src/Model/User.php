@@ -1,12 +1,22 @@
 <?php
 namespace Wonnova\SDK\Model;
 
+use JMS\Serializer\Annotation as JMS;
+
+/**
+ * Class User
+ * @author Wonnova
+ * @link http://www.wonnova.com
+ *
+ * @JMS\AccessType("public_method")
+ */
 class User implements \JsonSerializable
 {
     /**
      * @var string
+     * @JMS\Type("string")
      */
-    protected $userId;
+    private $userId;
 
     /**
      * @return string

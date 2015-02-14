@@ -1,10 +1,13 @@
 <?php
 namespace Wonnova\SDK\Connection;
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Collections\ArrayCollection;
 use GuzzleHttp\Exception\ServerException;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
+use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerBuilder;
 use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\Headers;
@@ -42,21 +45,27 @@ class Client extends GuzzleClient implements ClientInterface
 
     /**
      * @param CredentialsInterface $credentials
-     * @param $language
+     * @param string $language
+     * @param null $baseUrl
      */
-    public function __construct(CredentialsInterface $credentials, $language = 'es')
+    public function __construct(CredentialsInterface $credentials, $language = 'es', $baseUrl = null)
     {
         parent::__construct([
-            'base_url' => URIUtils::HOST,
+            'base_url' => $baseUrl ?: URIUtils::HOST,
             'defaults' => [
                 'headers' => [
                     'User-Agent' => self::USER_AGENT
                 ]
             ]
         ]);
-        $this->serializer = new Serializer([new GetSetMethodNormalizer()], [new JsonEncoder()]);
+        $this->serializer = SerializerBuilder::create()
+            ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
+            ->build();
         $this->credentials = $credentials;
         $this->language = $language;
+
+        // This makes annotations autoloading work with existing annotation classes
+        AnnotationRegistry::registerLoader('class_exists');
     }
 
     /**
@@ -68,7 +77,7 @@ class Client extends GuzzleClient implements ClientInterface
      * @return \GuzzleHttp\Message\ResponseInterface
      * @throws \Wonnova\SDK\Exception\ServerException
      */
-    protected function connect($method, $route, array $options = [])
+    private function connect($method, $route, array $options = [])
     {
         try {
             // Perform authentication if token has not been set yet
@@ -103,7 +112,7 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Performs authentication caching the auth token
      */
-    protected function authenticate()
+    private function authenticate()
     {
         $response = $this->send($this->createRequest('POST', URIUtils::parseUri(self::AUTH_ROUTE), [
             'json' => [
@@ -126,7 +135,7 @@ class Client extends GuzzleClient implements ClientInterface
         $options['headers'] = isset($options['headers']) ? $options['headers'] : [];
 
         $options['headers'][Headers::LANGUAGE_HEADER] = $this->language;
-        $options['headers'][Headers::TOKEN_HEADER] = $this->token->getToken();
+        $options['headers'][Headers::TOKEN_HEADER] = $this->token->getAccessToken();
 
         return $options;
     }
@@ -134,11 +143,17 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Returns users list
      *
-     * @return User[]
+     * @return ArrayCollection<User>
      */
     public function getUsers()
     {
         $response = $this->connect('GET', URIUtils::parseUri(self::USERS_ROUTE));
+        $contents = $response->getBody()->getContents();
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents,
+            'array<Wonnova\SDK\Model\User>',
+            'json'
+        ));
     }
 
     /**

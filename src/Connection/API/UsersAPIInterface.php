@@ -1,6 +1,7 @@
 <?php
 namespace Wonnova\SDK\Connection\API;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Wonnova\SDK\Model\User;
 
 /**
@@ -17,7 +18,7 @@ interface UsersAPIInterface
     /**
      * Returns users list
      *
-     * @return User[]
+     * @return ArrayCollection<User>
      */
     public function getUsers();
 
