@@ -19,6 +19,8 @@ class URIUtils
      */
     public static function parseUri($uri, array $routeParams = [])
     {
+        $uri = sprintf('/rest%s', $uri);
+
         foreach ($routeParams as $key => $value) {
             $key = '%' . $key . '%';
             $uri = str_replace($key, $value, $uri);
