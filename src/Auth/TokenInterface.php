@@ -15,7 +15,7 @@ interface TokenInterface
      *
      * @return string
      */
-    public function getAuthToken();
+    public function getToken();
 
     /**
      * @return array

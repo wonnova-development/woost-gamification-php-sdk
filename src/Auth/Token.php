@@ -8,11 +8,14 @@ namespace Wonnova\SDK\Auth;
  */
 class Token implements TokenInterface
 {
-    private $tokenKey;
+    /**
+     * @var string
+     */
+    private $token;
 
-    public function __construct($tokenKey)
+    public function __construct($token = '')
     {
-        $this->tokenKey = $tokenKey;
+        $this->token = $token;
     }
 
     /**
@@ -20,9 +23,14 @@ class Token implements TokenInterface
      *
      * @return string
      */
-    public function getAuthToken()
+    public function getToken()
     {
-        return $this->tokenKey;
+        return $this->token;
+    }
+
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 
     /**
@@ -30,6 +38,6 @@ class Token implements TokenInterface
      */
     public function toArray()
     {
-        return [self::HEADER_KEY => $this->getAuthToken()];
+        return [self::HEADER_KEY => $this->getToken()];
     }
 }
