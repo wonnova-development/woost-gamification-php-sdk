@@ -152,9 +152,7 @@ class Client extends GuzzleClient implements ClientInterface
     private function authenticate()
     {
         $response = $this->send($this->createRequest('POST', URIUtils::parseUri(self::AUTH_ROUTE), [
-            'json' => [
-                'key' => $this->credentials->getKey()
-            ]
+            'json' => $this->credentials->toArray()
         ]));
         $this->token = $this->serializer->deserialize(
             $response->getBody()->getContents(),

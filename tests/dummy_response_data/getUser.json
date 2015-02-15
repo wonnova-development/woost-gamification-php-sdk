@@ -1,0 +1,20 @@
+{
+  "userId": "273c4392-4c5a-4c3b-a70e-72675216702f",
+  "username": "alopez",
+  "provider": "facebook",
+  "fullName": "Antonio",
+  "avatar": "http:\/\/graph.facebook.com\/me\/picture",
+  "dateOfBirth": {
+    "date": "1988-09-20 00:00:00",
+    "timezone": "Europe\/Madrid"
+  },
+  "email": "antonio@yourmail.com",
+  "address": "",
+  "city": "Los Angeles",
+  "country": "USA",
+  "postalCode": "",
+  "phone": "",
+  "gender": "male",
+  "locale": "en_US",
+  "timezone": null
+}

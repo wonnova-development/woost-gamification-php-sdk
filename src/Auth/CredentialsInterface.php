@@ -8,5 +8,13 @@ namespace Wonnova\SDK\Auth;
  */
 interface CredentialsInterface
 {
+    /**
+     * @return string
+     */
     public function getKey();
+
+    /**
+     * @return array
+     */
+    public function toArray();
 }

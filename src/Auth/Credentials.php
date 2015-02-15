@@ -18,8 +18,19 @@ class Credentials implements CredentialsInterface
         $this->key = $key;
     }
 
+    /**
+     * @return string
+     */
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return ['key' => $this->getKey()];
     }
 }
