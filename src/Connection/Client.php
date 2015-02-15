@@ -13,6 +13,8 @@ use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\Headers;
 use Wonnova\SDK\Common\URIUtils;
+use Wonnova\SDK\Exception\InvalidRequestException;
+use Wonnova\SDK\Exception\NotFoundException;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
@@ -81,6 +83,9 @@ class Client extends GuzzleClient implements ClientInterface
      * @param array $options
      * @return \GuzzleHttp\Message\ResponseInterface
      * @throws \Wonnova\SDK\Exception\ServerException
+     * @throws \Wonnova\SDK\Exception\InvalidRequestException
+     * @throws \Wonnova\SDK\Exception\NotFoundException
+     * @throws \GuzzleHttp\Exception\ClientException
      */
     private function connect($method, $route, array $options = [])
     {
@@ -95,18 +100,33 @@ class Client extends GuzzleClient implements ClientInterface
 
             return $this->send($this->createRequest($method, $route, $options));
         } catch (ClientException $e) {
-            if ($e->getCode() === 401) {
-                $this->token = null;
-                return $this->connect($method, $route, $options);
+            switch ($e->getCode()) {
+                case 401: // Token not valid. Reconect
+                    $this->resetToken();
+                    // FIXME Fix possible inifnite loop here
+                    return $this->connect($method, $route, $options);
+                    break;
+                case 400:
+                    $message = json_decode($e->getResponse()->getBody()->getContents(), true);
+                    throw new InvalidRequestException(
+                        sprintf(
+                            'Invalid request to "%s" with method "%s" and response message "%s"',
+                            $route,
+                            $method,
+                            $message['message']
+                        ),
+                        $e->getCode(),
+                        $e
+                    );
+                case 404:
+                    throw new NotFoundException(
+                        sprintf('Route "%s" with method "%s" was not found', $route, $method),
+                        $e->getCode(),
+                        $e
+                    );
+                default:
+                    throw $e;
             }
-
-            // TODO Handle other errors
-
-            throw new \Wonnova\SDK\Exception\ClientException(
-                sprintf('There was a client error processing a request to "%s" with method "%s"', $route, $method),
-                $e->getCode(),
-                $e
-            );
         } catch (ServerException $e) {
             throw new \Wonnova\SDK\Exception\ServerException(
                 sprintf('There was a server error processing a request to "%s" with method "%s"', $route, $method),
@@ -114,6 +134,16 @@ class Client extends GuzzleClient implements ClientInterface
                 $e
             );
         }
+    }
+
+    /**
+     * Resets the token so that it can be reinitialized.
+     * This has to be used when current token has expired or is invalid
+     */
+    private function resetToken()
+    {
+        $this->token = null;
+        // TODO Clear token cache
     }
 
     /**
