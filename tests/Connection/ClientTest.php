@@ -46,4 +46,26 @@ class ClientTest extends TestCase
         $this->assertEquals($userData['dateOfBirth']['date'], $user->getDateOfBirth()->format('Y-m-d H:i:s'));
         $this->assertNull($user->getTimezone());
     }
+
+    public function testGetUsers()
+    {
+        $usersData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getUsers.json'), true);
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUsers.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $users = $this->client->getUsers();
+        $this->assertCount(3, $users);
+        foreach ($users as $key => $user) {
+            $this->assertInstanceOf('Wonnova\SDK\Model\User', $user);
+            $this->assertEquals($usersData[$key]['userId'], $user->getUserId());
+            $this->assertEquals($usersData[$key]['username'], $user->getUsername());
+            $this->assertEquals($usersData[$key]['provider'], $user->getProvider());
+            $this->assertInstanceOf('DateTime', $user->getDateOfBirth());
+            $this->assertEquals(
+                $usersData[$key]['dateOfBirth']['date'],
+                $user->getDateOfBirth()->format('Y-m-d H:i:s')
+            );
+        }
+    }
 }
