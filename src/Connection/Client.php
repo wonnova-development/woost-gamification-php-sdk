@@ -4,6 +4,7 @@ namespace Wonnova\SDK\Connection;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
 use GuzzleHttp\Exception\ServerException;
+use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
 use JMS\Serializer\Serializer;
@@ -15,6 +16,7 @@ use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use Wonnova\SDK\Serializer\DateTimeHandler;
 
 /**
  * Class Client
@@ -60,6 +62,9 @@ class Client extends GuzzleClient implements ClientInterface
         ]);
         $this->serializer = SerializerBuilder::create()
             ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
+            ->configureHandlers(function (HandlerRegistry $registry) {
+                $registry->registerSubscribingHandler(new DateTimeHandler());
+            })
             ->build();
         $this->credentials = $credentials;
         $this->language = $language;
@@ -99,11 +104,13 @@ class Client extends GuzzleClient implements ClientInterface
 
             throw new \Wonnova\SDK\Exception\ClientException(
                 sprintf('There was a client error processing a request to "%s" with method "%s"', $route, $method),
+                $e->getCode(),
                 $e
             );
         } catch (ServerException $e) {
             throw new \Wonnova\SDK\Exception\ServerException(
                 sprintf('There was a server error processing a request to "%s" with method "%s"', $route, $method),
+                $e->getCode(),
                 $e
             );
         }
