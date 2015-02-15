@@ -171,7 +171,15 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getUser($userId)
     {
-        // TODO: Implement getUser() method.
+        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ROUTE, [
+            'userId' => $userId
+        ]));
+        $contents = $response->getBody()->getContents();
+        return $this->serializer->deserialize(
+            $contents,
+            'Wonnova\SDK\Model\User',
+            'json'
+        );
     }
 
     /**
