@@ -20,7 +20,3 @@ script:
   - mkdir build
   - ./vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover build/clover.xml
   - ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
-
-after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover build/clover.xml
