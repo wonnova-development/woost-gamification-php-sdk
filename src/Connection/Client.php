@@ -12,6 +12,7 @@ use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use Wonnova\SDK\Auth\CredentialsInterface;
+use Wonnova\SDK\Auth\Token;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\Headers;
 use Wonnova\SDK\Common\URIUtils;
@@ -31,6 +32,7 @@ class Client extends GuzzleClient implements ClientInterface
 {
     const AUTH_ROUTE = '/auth';
     const USER_AGENT = 'wonnova-php-sdk';
+    const TOKEN_KEY = 'wonnova_auth_token';
 
     /**
      * @var CredentialsInterface
@@ -83,6 +85,12 @@ class Client extends GuzzleClient implements ClientInterface
         $this->credentials = $credentials;
         $this->language = $language;
         $this->cache = $cache ?: new FilesystemCache(sys_get_temp_dir());
+
+        // Initialize the token if it exists in cache
+        if ($this->cache->contains(self::TOKEN_KEY)) {
+            $this->token = new Token();
+            $this->token->setAccessToken($this->cache->fetch(self::TOKEN_KEY));
+        }
 
         // This makes annotations autoloading work with existing annotation classes
         AnnotationRegistry::registerLoader('class_exists');
@@ -156,7 +164,7 @@ class Client extends GuzzleClient implements ClientInterface
     private function resetToken()
     {
         $this->token = null;
-        // TODO Clear token cache
+        $this->cache->delete(self::TOKEN_KEY);
     }
 
     /**
@@ -172,6 +180,7 @@ class Client extends GuzzleClient implements ClientInterface
             'Wonnova\SDK\Auth\Token',
             'json'
         );
+        $this->cache->save(self::TOKEN_KEY, $this->token->getAccessToken());
     }
 
     /**
