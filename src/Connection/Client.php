@@ -1,16 +1,12 @@
 <?php
 namespace Wonnova\SDK\Connection;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use GuzzleHttp\Exception\ServerException;
-use JMS\Serializer\Handler\HandlerRegistry;
-use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
-use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializerBuilder;
 use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\Token;
 use Wonnova\SDK\Auth\TokenInterface;
@@ -22,7 +18,7 @@ use Wonnova\SDK\Exception\NotFoundException;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
-use Wonnova\SDK\Serializer\DateTimeHandler;
+use Wonnova\SDK\Serializer\SerializerFactory;
 
 /**
  * Class Client
@@ -77,16 +73,7 @@ class Client extends GuzzleClient implements ClientInterface
             ]
         ]);
 
-        // Create a (de)serializer
-        $this->serializer = SerializerBuilder::create()
-            ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
-            ->configureHandlers(function (HandlerRegistry $registry) {
-                $registry->registerSubscribingHandler(new DateTimeHandler());
-            })
-            ->build();
-        // This makes annotations autoloading work with existing annotation classes
-        AnnotationRegistry::registerLoader('class_exists');
-
+        $this->serializer = SerializerFactory::create();
         $this->credentials = $credentials;
         $this->language = $language;
         $this->cache = $cache ?: new FilesystemCache(sys_get_temp_dir());
@@ -265,7 +252,7 @@ class Client extends GuzzleClient implements ClientInterface
             'json' => $user
         ]);
         $contents = $response->getBody()->getContents();
-        // TODO The server will return the user data. Refresh the model
-        $userData = $this->serializer->deserialize($contents, 'array', 'json');
+        // The server will return the user data. Refresh the model
+        $user->fromArray($this->serializer->deserialize($contents, 'array', 'json'));
     }
 }
