@@ -1,6 +1,7 @@
 <?php
 namespace Wonnova\SDK\Test\Connection;
 
+use Doctrine\Common\Cache\ArrayCache;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Subscriber\Mock;
@@ -21,7 +22,7 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->client = new Client(new Credentials(''));
+        $this->client = new Client(new Credentials(''), 'es', new ArrayCache());
 
         $this->subscriber = new Mock([
             // Add the auth token response that will be requested before every test

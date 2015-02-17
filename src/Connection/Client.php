@@ -2,6 +2,8 @@
 namespace Wonnova\SDK\Connection;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use GuzzleHttp\Exception\ServerException;
 use JMS\Serializer\Handler\HandlerRegistry;
@@ -35,6 +37,14 @@ class Client extends GuzzleClient implements ClientInterface
      */
     protected $credentials;
     /**
+     * @var string
+     */
+    protected $language;
+    /**
+     * @var Cache
+     */
+    protected $cache;
+    /**
      * @var Serializer
      */
     protected $serializer;
@@ -42,18 +52,19 @@ class Client extends GuzzleClient implements ClientInterface
      * @var TokenInterface
      */
     protected $token;
-    /**
-     * @var string
-     */
-    protected $language;
 
     /**
      * @param CredentialsInterface $credentials
      * @param string $language
+     * @param Cache $cache
      * @param null $baseUrl
      */
-    public function __construct(CredentialsInterface $credentials, $language = 'es', $baseUrl = null)
-    {
+    public function __construct(
+        CredentialsInterface $credentials,
+        $language = 'es',
+        Cache $cache = null,
+        $baseUrl = null
+    ) {
         parent::__construct([
             'base_url' => $baseUrl ?: URIUtils::HOST,
             'defaults' => [
@@ -68,8 +79,10 @@ class Client extends GuzzleClient implements ClientInterface
                 $registry->registerSubscribingHandler(new DateTimeHandler());
             })
             ->build();
+
         $this->credentials = $credentials;
         $this->language = $language;
+        $this->cache = $cache ?: new FilesystemCache(sys_get_temp_dir());
 
         // This makes annotations autoloading work with existing annotation classes
         AnnotationRegistry::registerLoader('class_exists');
