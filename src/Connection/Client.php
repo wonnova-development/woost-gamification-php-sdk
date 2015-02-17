@@ -16,6 +16,7 @@ use Wonnova\SDK\Auth\Token;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\Headers;
 use Wonnova\SDK\Common\URIUtils;
+use Wonnova\SDK\Exception\InvalidArgumentException;
 use Wonnova\SDK\Exception\InvalidRequestException;
 use Wonnova\SDK\Exception\NotFoundException;
 use Wonnova\SDK\Model\User;
@@ -75,12 +76,16 @@ class Client extends GuzzleClient implements ClientInterface
                 ]
             ]
         ]);
+
+        // Create a (de)serializer
         $this->serializer = SerializerBuilder::create()
             ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
             ->configureHandlers(function (HandlerRegistry $registry) {
                 $registry->registerSubscribingHandler(new DateTimeHandler());
             })
             ->build();
+        // This makes annotations autoloading work with existing annotation classes
+        AnnotationRegistry::registerLoader('class_exists');
 
         $this->credentials = $credentials;
         $this->language = $language;
@@ -92,8 +97,6 @@ class Client extends GuzzleClient implements ClientInterface
             $this->token->setAccessToken($this->cache->fetch(self::TOKEN_KEY));
         }
 
-        // This makes annotations autoloading work with existing annotation classes
-        AnnotationRegistry::registerLoader('class_exists');
     }
 
     /**
@@ -225,11 +228,7 @@ class Client extends GuzzleClient implements ClientInterface
             'userId' => $userId
         ]));
         $contents = $response->getBody()->getContents();
-        return $this->serializer->deserialize(
-            $contents,
-            'Wonnova\SDK\Model\User',
-            'json'
-        );
+        return $this->serializer->deserialize($contents, 'Wonnova\SDK\Model\User', 'json');
     }
 
     /**
@@ -239,7 +238,13 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function createUser(User $user)
     {
-        // TODO: Implement createUser() method.
+        $response = $this->connect('POST', URIUtils::parseUri(self::USERS_ROUTE), [
+            'json' => $user
+        ]);
+        $contents = $response->getBody()->getContents();
+        $userData = $this->serializer->deserialize($contents, 'array', 'json');
+        // The server will return the user ID. Set it to the model
+        $user->setUserId($userData['userId']);
     }
 
     /**
@@ -249,6 +254,18 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function updateUser(User $user)
     {
-        // TODO: Implement updateUser() method.
+        $userId = $user->getUserId();
+        if (empty($userId)) {
+            throw new InvalidArgumentException('Provided user has an empty userId.');
+        }
+
+        $response = $this->connect('PUT', URIUtils::parseUri(self::UPDATE_USER_ROUTE, [
+            'userId' => $userId
+        ]), [
+            'json' => $user
+        ]);
+        $contents = $response->getBody()->getContents();
+        // TODO The server will return the user data. Refresh the model
+        $userData = $this->serializer->deserialize($contents, 'array', 'json');
     }
 }

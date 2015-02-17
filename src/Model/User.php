@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @JMS\AccessType("public_method")
  */
-class User
+class User extends AbstractModel
 {
     /**
      * @var string
@@ -356,5 +356,45 @@ class User
     {
         $this->timezone = $timezone;
         return $this;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'userId' => $this->userId,
+            'username' => $this->username,
+            'provider' => $this->provider,
+            'fullName' => $this->fullName,
+            'avatar' => $this->avatar,
+            'dateOfBirth' => $this->dateOfBirth instanceof \DateTime
+                ? $this->dateOfBirth->format('Y-m-d H:i:s')
+                : $this->dateOfBirth,
+            'email' => $this->email,
+            'address' => $this->address,
+            'city' => $this->city,
+            'country' => $this->country,
+            'postalCode' => $this->postalCode,
+            'phone' => $this->phone,
+            'gender' => $this->gender,
+            'locale' => $this->locale,
+            'timezone' => $this->timezone
+        ];
+    }
+
+    /**
+     * Populates this object from an array of data
+     *
+     * @param array $data
+     */
+    public function fromArray(array $data)
+    {
+        // TODO
     }
 }
