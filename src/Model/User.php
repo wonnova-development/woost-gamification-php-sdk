@@ -187,12 +187,20 @@ class User extends AbstractModel
     }
 
     /**
-     * @param \DateTime $dateOfBirth
+     * @param \DateTime|array|string $dateOfBirth
      * @return $this
      */
     public function setDateOfBirth($dateOfBirth)
     {
-        $this->dateOfBirth = $dateOfBirth;
+        if (is_array($dateOfBirth) && isset($dateOfBirth['date'])) {
+            $timezone = isset($dateOfBirth['timezone']) ? $dateOfBirth['timezone'] : null;
+            $this->dateOfBirth = new \DateTime($dateOfBirth['date'], $timezone);
+        } elseif (is_string($dateOfBirth)) {
+            $this->dateOfBirth = new \DateTime($dateOfBirth);
+        } else {
+            $this->dateOfBirth = $dateOfBirth;
+        }
+
         return $this;
     }
 
@@ -359,13 +367,11 @@ class User extends AbstractModel
     }
 
     /**
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     * Returns a copy data array of this object
+     *
+     * @return array
      */
-    public function jsonSerialize()
+    public function toArray()
     {
         return [
             'userId' => $this->userId,
@@ -386,15 +392,5 @@ class User extends AbstractModel
             'locale' => $this->locale,
             'timezone' => $this->timezone
         ];
-    }
-
-    /**
-     * Populates this object from an array of data
-     *
-     * @param array $data
-     */
-    public function fromArray(array $data)
-    {
-        // TODO
     }
 }
