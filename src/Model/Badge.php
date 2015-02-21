@@ -33,10 +33,15 @@ class Badge extends AbstractModel
      */
     private $imageUrl;
     /**
-     * @var int
-     * @JMS\Type("integer")
+     * @var string
+     * @JMS\Type("string")
      */
-    private $count;
+    private $type;
+    /**
+     * @var \DateTime
+     * @JMS\Type("StringDateTime")
+     */
+    private $notificationDate;
 
     /**
      * @return int
@@ -111,20 +116,38 @@ class Badge extends AbstractModel
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getCount()
+    public function getType()
     {
-        return $this->count;
+        return $this->type;
     }
 
     /**
-     * @param int $count
+     * @param string $type
      * @return $this
      */
-    public function setCount($count)
+    public function setType($type)
     {
-        $this->count = $count;
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getNotificationDate()
+    {
+        return $this->notificationDate;
+    }
+
+    /**
+     * @param \DateTime $notificationDate
+     * @return $this
+     */
+    public function setNotificationDate($notificationDate)
+    {
+        $this->notificationDate = $notificationDate;
         return $this;
     }
 }

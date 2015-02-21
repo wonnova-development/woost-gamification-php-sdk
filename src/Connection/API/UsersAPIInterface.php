@@ -15,6 +15,7 @@ interface UsersAPIInterface
     const USER_ROUTE = '/users?userId=%userId%';
     const UPDATE_USER_ROUTE = '/users/%userId%';
     const USER_NOTIFICATIONS_ROUTE = '/users/%userId%/notifications';
+    const USER_BADGES_ROUTE = '/users/%userId%/badges';
 
     /**
      * Returns users list
@@ -52,4 +53,12 @@ interface UsersAPIInterface
      * @return Collection<Notification>
      */
     public function getUserNotifications($user);
+
+    /**
+     * Returns the list of badges that certain user has won
+     *
+     * @param User|string $user A User model or userId
+     * @return Collection<Notification>
+     */
+    public function getUserBadges($user);
 }

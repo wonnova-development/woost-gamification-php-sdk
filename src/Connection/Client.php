@@ -276,4 +276,25 @@ class Client extends GuzzleClient implements ClientInterface
             'json'
         ));
     }
+
+    /**
+     * Returns the list of badges that certain user has won
+     *
+     * @param User|string $user A User model or userId
+     * @return Collection<Notification>
+     */
+    public function getUserBadges($user)
+    {
+        $userId = $user instanceof User ? $user->getUserId() : $user;
+        $response = $this->connect('GET', URIUtils::parseUri(self::USER_BADGES_ROUTE, [
+            'userId' => $userId
+        ]));
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
+        $contents = $this->serializer->serialize($contents['badges'], 'json');
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents,
+            'array<Wonnova\SDK\Model\Badge>',
+            'json'
+        ));
+    }
 }
