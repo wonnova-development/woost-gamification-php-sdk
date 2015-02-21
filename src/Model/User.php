@@ -193,7 +193,7 @@ class User extends AbstractModel
     public function setDateOfBirth($dateOfBirth)
     {
         if (is_array($dateOfBirth) && isset($dateOfBirth['date'])) {
-            $timezone = isset($dateOfBirth['timezone']) ? $dateOfBirth['timezone'] : null;
+            $timezone = isset($dateOfBirth['timezone']) ? new \DateTimeZone($dateOfBirth['timezone']) : null;
             $this->dateOfBirth = new \DateTime($dateOfBirth['date'], $timezone);
         } elseif (is_string($dateOfBirth)) {
             $this->dateOfBirth = new \DateTime($dateOfBirth);
