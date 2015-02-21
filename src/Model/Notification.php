@@ -12,18 +12,6 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Notification extends AbstractModel
 {
-    const TYPE_POINTS = 'points';
-    const TYPE_LEVEL = 'level';
-    const TYPE_BADGE = 'badges'; // In singular for consistency
-    const TYPE_QUEST = 'quest';
-
-    /**
-     * Just an allias for TYPE_BADGE. This will be removed at some point if the public API is updated
-     * @deprecated Use TYPE_BADGE constant instead.
-     */
-    const TYPE_BADGES = 'badges';
-
-
     /**
      * @var string
      * @JMS\Type("string")

@@ -15,6 +15,9 @@ use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Exception\InvalidArgumentException;
 use Wonnova\SDK\Exception\InvalidRequestException;
 use Wonnova\SDK\Exception\NotFoundException;
+use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Badge;
+use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
@@ -190,7 +193,7 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Returns users list
      *
-     * @return Collection<User>
+     * @return Collection|User[]
      */
     public function getUsers()
     {
@@ -260,7 +263,7 @@ class Client extends GuzzleClient implements ClientInterface
      *
      *
      * @param User|string $user A User model or userId
-     * @return Collection<Notification>
+     * @return Collection|Notification[]
      */
     public function getUserNotifications($user)
     {
@@ -281,7 +284,7 @@ class Client extends GuzzleClient implements ClientInterface
      * Returns the list of badges that certain user has won
      *
      * @param User|string $user A User model or userId
-     * @return Collection<Notification>
+     * @return Collection|Badge[]
      */
     public function getUserBadges($user)
     {
@@ -294,6 +297,32 @@ class Client extends GuzzleClient implements ClientInterface
         return new ArrayCollection($this->serializer->deserialize(
             $contents,
             'array<Wonnova\SDK\Model\Badge>',
+            'json'
+        ));
+    }
+
+    /**
+     * Returns the number of achievements of each type for certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param array|string $types List of types in a comma-separated string or array.
+     *          All the types will be returned by default
+     * @return Collection|Achievement[]
+     */
+    public function getUserAchievements($user, $types = [])
+    {
+        $userId = $user instanceof User ? $user->getUserId() : $user;
+        $types = empty($types) ? Achievement::getAllTypesList() : $types;
+        $types = is_array($types) ? implode(',', $types) : $types;
+        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
+            'userId' => $userId,
+            'types' => $types
+        ]));
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
+        $contents = $this->serializer->serialize($contents['achievements'], 'json');
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents,
+            'array<Wonnova\SDK\Model\Achievement>',
             'json'
         ));
     }

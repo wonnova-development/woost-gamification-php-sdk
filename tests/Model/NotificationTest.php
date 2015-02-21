@@ -2,6 +2,7 @@
 namespace Wonnova\SDK\Test\Model;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Notification;
 
 class NotificationTest extends TestCase
@@ -18,7 +19,7 @@ class NotificationTest extends TestCase
 
     public function testType()
     {
-        $expected = Notification::TYPE_BADGE;
+        $expected = Achievement::TYPE_BADGE;
         $this->assertNull($this->notification->getType());
         $this->assertSame($this->notification, $this->notification->setType($expected));
         $this->assertEquals($expected, $this->notification->getType());

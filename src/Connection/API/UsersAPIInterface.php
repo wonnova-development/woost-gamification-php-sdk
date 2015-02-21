@@ -2,6 +2,9 @@
 namespace Wonnova\SDK\Connection\API;
 
 use Doctrine\Common\Collections\Collection;
+use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Badge;
+use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\User;
 
 /**
@@ -16,11 +19,12 @@ interface UsersAPIInterface
     const UPDATE_USER_ROUTE = '/users/%userId%';
     const USER_NOTIFICATIONS_ROUTE = '/users/%userId%/notifications';
     const USER_BADGES_ROUTE = '/users/%userId%/badges';
+    const USER_ACHIEVEMENTS_ROUTE = '/users/%userId%/achievements?types=%types%';
 
     /**
      * Returns users list
      *
-     * @return Collection<User>
+     * @return Collection|User[]
      */
     public function getUsers();
 
@@ -50,7 +54,7 @@ interface UsersAPIInterface
      * Returns the list of pending notifications for a user
      *
      * @param User|string $user A User model or userId
-     * @return Collection<Notification>
+     * @return Collection|Notification[]
      */
     public function getUserNotifications($user);
 
@@ -58,7 +62,17 @@ interface UsersAPIInterface
      * Returns the list of badges that certain user has won
      *
      * @param User|string $user A User model or userId
-     * @return Collection<Notification>
+     * @return Collection|Badge[]
      */
     public function getUserBadges($user);
+
+    /**
+     * Returns the number of achievements of each type for certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param array|string $types List of types in a comma-separated string or array.
+     *          All the types will be returned by default
+     * @return Collection|Achievement[]
+     */
+    public function getUserAchievements($user, $types = []);
 }
