@@ -12,6 +12,11 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Badge extends AbstractModel
 {
+    const TYPE_FIRST_OCCURRENCE = 'first_occurrence';
+    const TYPE_REPETITION = 'repetition';
+    const TYPE_CONSECUTIVE_DAYS = 'consecutive_days';
+    const TYPE_COMBO = 'combo';
+
     /**
      * @var int
      * @JMS\Type("integer")
