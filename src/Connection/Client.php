@@ -4,8 +4,8 @@ namespace Wonnova\SDK\Connection;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use GuzzleHttp\Exception\ServerException;
-use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\Serializer;
 use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\Token;
@@ -190,7 +190,7 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Returns users list
      *
-     * @return ArrayCollection<User>
+     * @return Collection<User>
      */
     public function getUsers()
     {
@@ -254,5 +254,26 @@ class Client extends GuzzleClient implements ClientInterface
         $contents = $response->getBody()->getContents();
         // The server will return the user data. Refresh the model
         $user->fromArray($this->serializer->deserialize($contents, 'array', 'json'));
+    }
+
+    /**
+     *
+     *
+     * @param User|string $user A User model or userId
+     * @return Collection<Notification>
+     */
+    public function getUserNotifications($user)
+    {
+        $userId = $user instanceof User ? $user->getUserId() : $user;
+        $response = $this->connect('GET', URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
+            'userId' => $userId
+        ]));
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
+        $contents = $this->serializer->serialize($contents['notifications'], 'json');
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents,
+            'array<Wonnova\SDK\Model\Notification>',
+            'json'
+        ));
     }
 }

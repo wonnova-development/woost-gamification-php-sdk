@@ -1,7 +1,7 @@
 <?php
 namespace Wonnova\SDK\Connection\API;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Wonnova\SDK\Model\User;
 
 /**
@@ -14,11 +14,12 @@ interface UsersAPIInterface
     const USERS_ROUTE = '/users';
     const USER_ROUTE = '/users?userId=%userId%';
     const UPDATE_USER_ROUTE = '/users/%userId%';
+    const USER_NOTIFICATIONS_ROUTE = '/users/%userId%/notifications';
 
     /**
      * Returns users list
      *
-     * @return ArrayCollection<User>
+     * @return Collection<User>
      */
     public function getUsers();
 
@@ -43,4 +44,12 @@ interface UsersAPIInterface
      * @param User $user
      */
     public function updateUser(User $user);
+
+    /**
+     * Returns the list of pending notifications for a user
+     *
+     * @param User|string $user A User model or userId
+     * @return Collection<Notification>
+     */
+    public function getUserNotifications($user);
 }
