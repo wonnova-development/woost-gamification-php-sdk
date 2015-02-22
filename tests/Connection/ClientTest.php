@@ -156,11 +156,6 @@ class ClientTest extends TestCase
 
     public function testGetUserAchievements()
     {
-        $achievementsData = json_decode(
-            file_get_contents(__DIR__ . '/../dummy_response_data/getUserAchievements.json'),
-            true
-        );
-        $achievementsData = $achievementsData['achievements'];
         // Set mocked response
         $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserAchievements.json', 'r'));
         $this->subscriber->addResponse(new Response(200, [], $body));
@@ -171,6 +166,29 @@ class ClientTest extends TestCase
         $this->assertEquals(165, $achievements->get(0)->getValue());
         $this->assertEquals(Achievement::TYPE_BADGE, $achievements->get(1)->getType());
         $this->assertEquals(2, $achievements->get(1)->getValue());
+    }
+
+    public function testGetUserProgressInQuest()
+    {
+        $progressData = json_decode(
+            file_get_contents(__DIR__ . '/../dummy_response_data/getUserProgressInQuest.json'),
+            true
+        );
+        $progressData = $progressData['questSteps'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserProgressInQuest.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $questSteps = $this->client->getUserProgressInQuest('', '');
+        $this->assertCount(4, $questSteps);
+        foreach ($questSteps as $key => $questStep) {
+            $this->assertEquals($progressData[$key]['id'], $questStep->getId());
+            $this->assertEquals($progressData[$key]['type'], $questStep->getType());
+            $this->assertEquals($progressData[$key]['code'], $questStep->getCode());
+            $this->assertEquals($progressData[$key]['name'], $questStep->getName());
+            $this->assertEquals($progressData[$key]['description'], $questStep->getDescription());
+            $this->assertEquals($progressData[$key]['completed'], $questStep->getCompleted());
+        }
     }
 
     public function testGetQuests()
