@@ -285,7 +285,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserNotifications($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
+        return $this->getSubresourceList(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
             'userId' => $userId
         ]), 'notifications', 'Wonnova\SDK\Model\Notification');
     }
@@ -299,7 +299,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserBadges($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
+        return $this->getSubresourceList(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
             'userId' => $userId
         ]), 'badges', 'Wonnova\SDK\Model\Badge');
     }
@@ -318,7 +318,7 @@ class Client extends GuzzleClient implements ClientInterface
         $types = empty($types) ? Achievement::getAllTypesList() : $types;
         $types = is_array($types) ? implode(',', $types) : $types;
 
-        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
+        return $this->getSubresourceList(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
             'userId' => $userId,
             'types' => $types
         ]), 'achievements', 'Wonnova\SDK\Model\Achievement');
@@ -334,21 +334,21 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserProgressInQuest($user, $questCode)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
+        return $this->getSubresourceList(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
             'userId' => $userId,
             'questCode' => $questCode
         ]), 'questSteps', 'Wonnova\SDK\Model\QuestStep');
     }
 
     /**
-     * Fetches a route and maps a user's subresource list of models
+     * Fetches a route and maps a subresource list of models
      *
      * @param $route
      * @param $resourceKey
      * @param $resourceClass
      * @return ArrayCollection
      */
-    protected function getUserSubresourceList($route, $resourceKey, $resourceClass)
+    protected function getSubresourceList($route, $resourceKey, $resourceClass)
     {
         $response = $this->connect('GET', $route);
         $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
