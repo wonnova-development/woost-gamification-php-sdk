@@ -8,6 +8,7 @@ use GuzzleHttp\Subscriber\Mock;
 use PHPUnit_Framework_TestCase as TestCase;
 use Wonnova\SDK\Auth\Credentials;
 use Wonnova\SDK\Connection\Client;
+use Wonnova\SDK\Model\User;
 
 class ClientTest extends TestCase
 {
@@ -68,5 +69,51 @@ class ClientTest extends TestCase
                 $user->getDateOfBirth()->format('Y-m-d H:i:s')
             );
         }
+    }
+
+    public function testCreateUser()
+    {
+        $expectedId = 'foobar123';
+        // Set mocked response
+        $body = new Stream(fopen(sprintf('data://text/plain,{"userId": "%s"}', $expectedId), 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $newUser = new User();
+        $newUser->setEmail('foo@bar.com')
+                ->setDateOfBirth(new \DateTime('1970-01-01 00:00:00'))
+                ->setFullName('John Doe');
+        $this->assertNull($newUser->getUserId());
+        $this->client->createUser($newUser);
+        $this->assertEquals($expectedId, $newUser->getUserId());
+    }
+
+    public function testUpdateUser()
+    {
+        $userData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getUser.json'), true);
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUser.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $user = new User();
+        $user->setUserId('123')
+             ->setEmail('new@email.com')
+             ->setFullName('EDITED');
+        $this->client->updateUser($user);
+
+        // Test that the user has been populated with the response data
+        $this->assertEquals($userData['userId'], $user->getUserId());
+        $this->assertEquals($userData['username'], $user->getUsername());
+        $this->assertEquals($userData['provider'], $user->getProvider());
+        $this->assertInstanceOf('DateTime', $user->getDateOfBirth());
+        $this->assertEquals($userData['dateOfBirth']['date'], $user->getDateOfBirth()->format('Y-m-d H:i:s'));
+        $this->assertNull($user->getTimezone());
+    }
+
+    /**
+     * @expectedException \Wonnova\SDK\Exception\InvalidArgumentException
+     */
+    public function testUpdateUserWithoutIdThrowsException()
+    {
+        $this->client->updateUser(new User());
     }
 }
