@@ -19,6 +19,7 @@ use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Notification;
+use Wonnova\SDK\Model\Quest;
 use Wonnova\SDK\Model\QuestStep;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
@@ -208,6 +209,26 @@ class Client extends GuzzleClient implements ClientInterface
     }
 
     /**
+     * Fetches a route and maps a resource list of models under provided key
+     *
+     * @param $route
+     * @param $resourceKey
+     * @param $resourceClass
+     * @return ArrayCollection
+     */
+    protected function getResourceList($route, $resourceKey, $resourceClass)
+    {
+        $response = $this->connect('GET', $route);
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
+        $contents = $this->serializer->serialize($contents[$resourceKey], 'json');
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents,
+            sprintf('array<%s>', $resourceClass),
+            'json'
+        ));
+    }
+
+    /**
      * Returns users list
      *
      * @return Collection|User[]
@@ -285,7 +306,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserNotifications($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getSubresourceList(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
+        return $this->getResourceList(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
             'userId' => $userId
         ]), 'notifications', 'Wonnova\SDK\Model\Notification');
     }
@@ -299,7 +320,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserBadges($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getSubresourceList(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
+        return $this->getResourceList(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
             'userId' => $userId
         ]), 'badges', 'Wonnova\SDK\Model\Badge');
     }
@@ -318,7 +339,7 @@ class Client extends GuzzleClient implements ClientInterface
         $types = empty($types) ? Achievement::getAllTypesList() : $types;
         $types = is_array($types) ? implode(',', $types) : $types;
 
-        return $this->getSubresourceList(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
+        return $this->getResourceList(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
             'userId' => $userId,
             'types' => $types
         ]), 'achievements', 'Wonnova\SDK\Model\Achievement');
@@ -334,29 +355,19 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserProgressInQuest($user, $questCode)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getSubresourceList(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
+        return $this->getResourceList(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
             'userId' => $userId,
             'questCode' => $questCode
         ]), 'questSteps', 'Wonnova\SDK\Model\QuestStep');
     }
 
     /**
-     * Fetches a route and maps a subresource list of models
+     * Returns the list of created quests
      *
-     * @param $route
-     * @param $resourceKey
-     * @param $resourceClass
-     * @return ArrayCollection
+     * @return Collection|Quest[]
      */
-    protected function getSubresourceList($route, $resourceKey, $resourceClass)
+    public function getQuests()
     {
-        $response = $this->connect('GET', $route);
-        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
-        $contents = $this->serializer->serialize($contents[$resourceKey], 'json');
-        return new ArrayCollection($this->serializer->deserialize(
-            $contents,
-            sprintf('array<%s>', $resourceClass),
-            'json'
-        ));
+        return $this->getResourceList(URIUtils::parseUri(self::QUESTS_ROUTE), 'quests', 'Wonnova\SDK\Model\Quest');
     }
 }
