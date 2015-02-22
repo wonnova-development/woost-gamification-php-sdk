@@ -15,6 +15,7 @@ use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Exception\InvalidArgumentException;
 use Wonnova\SDK\Exception\InvalidRequestException;
 use Wonnova\SDK\Exception\NotFoundException;
+use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Notification;
@@ -117,10 +118,25 @@ class Client extends GuzzleClient implements ClientInterface
         } catch (ClientException $e) {
             switch ($e->getCode()) {
                 case 401: // Token not valid. Reconect
-                    $this->resetToken();
-                    // FIXME Fix possible inifnite loop here
-                    return $this->connect($method, $route, $options);
-                    break;
+                    $message = json_decode($e->getResponse()->getBody()->getContents(), true);
+
+                    // If the server returned an INVALID_TOKEN response, reconnect
+                    if ($message['error'] === 'INVALID_TOKEN') {
+                        $this->resetToken();
+                        return $this->connect($method, $route, $options);
+                        break;
+                    }
+
+                    throw new UnauthorizedException(
+                        sprintf(
+                            'Unauthorized request to "%s" with method "%s" and response message "%s"',
+                            $route,
+                            $method,
+                            isset($message['message']) ? $message['message'] : ''
+                        ),
+                        $e->getCode(),
+                        $e
+                    );
                 case 400:
                     $message = json_decode($e->getResponse()->getBody()->getContents(), true);
                     throw new InvalidRequestException(
@@ -306,6 +322,22 @@ class Client extends GuzzleClient implements ClientInterface
             'userId' => $userId,
             'types' => $types
         ]), 'achievements', 'Wonnova\SDK\Model\Achievement');
+    }
+
+    /**
+     * Returns the list of steps in a quest telling if certain user has already completed them
+     *
+     * @param User|string $user A User model or userId
+     * @param string $questCode
+     * @return Collection|QuestStep[]
+     */
+    public function getUserProgressInQuest($user, $questCode)
+    {
+        $userId = $user instanceof User ? $user->getUserId() : $user;
+        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
+            'userId' => $userId,
+            'questCode' => $questCode
+        ]), 'questSteps', 'Wonnova\SDK\Model\QuestStep');
     }
 
     /**

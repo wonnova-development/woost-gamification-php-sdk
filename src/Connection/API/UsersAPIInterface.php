@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\Collection;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Notification;
+use Wonnova\SDK\Model\QuestStep;
 use Wonnova\SDK\Model\User;
 
 /**
@@ -20,6 +21,7 @@ interface UsersAPIInterface
     const USER_NOTIFICATIONS_ROUTE = '/users/%userId%/notifications';
     const USER_BADGES_ROUTE = '/users/%userId%/badges';
     const USER_ACHIEVEMENTS_ROUTE = '/users/%userId%/achievements?types=%types%';
+    const USER_QUEST_PROGRESS_ROUTE = '/users/%userId%/quests/%questCode%/progress';
 
     /**
      * Returns users list
@@ -75,4 +77,13 @@ interface UsersAPIInterface
      * @return Collection|Achievement[]
      */
     public function getUserAchievements($user, $types = []);
+
+    /**
+     * Returns the list of steps in a quest telling if certain user has already completed them
+     *
+     * @param User|string $user A User model or userId
+     * @param string $questCode
+     * @return Collection|QuestStep[]
+     */
+    public function getUserProgressInQuest($user, $questCode);
 }
