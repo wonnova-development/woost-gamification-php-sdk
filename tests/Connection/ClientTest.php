@@ -133,4 +133,23 @@ class ClientTest extends TestCase
         $this->assertEquals(Achievement::TYPE_BADGE, $notifications->get(2)->getType());
         $this->assertEquals('Third pending notification', $notifications->get(2)->getMessage());
     }
+
+    public function testGetQuests()
+    {
+        $questsData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getQuests.json'), true);
+        $questsData = $questsData['quests'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getQuests.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $quests = $this->client->getQuests();
+        foreach ($quests as $key => $quest) {
+            $this->assertEquals($questsData[$key]['id'], $quest->getId());
+            $this->assertInstanceof('DateTime', $quest->getStartDate());
+            $this->assertEquals($questsData[$key]['code'], $quest->getCode());
+            $this->assertEquals($questsData[$key]['generatesNotification'], $quest->getGeneratesNotification());
+            $this->assertEquals($questsData[$key]['name'], $quest->getName());
+            $this->assertEquals($questsData[$key]['description'], $quest->getDescription());
+        }
+    }
 }
