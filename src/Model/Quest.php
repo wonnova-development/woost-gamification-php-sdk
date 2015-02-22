@@ -1,6 +1,8 @@
 <?php
 namespace Wonnova\SDK\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -42,6 +44,17 @@ class Quest extends AbstractModel
      * @JMS\Type("string")
      */
     private $description;
+    /**
+     * @var int
+     * @JMS\Type("integer")
+     * @JMS\Accessor(getter="getProgress",setter="setProgress")
+     */
+    private $progress;
+    /**
+     * @var Collection|QuestStep[]
+     * @JMS\Type("array<Wonnova\SDK\Model\QuestStep>")
+     */
+    private $questSteps;
 
     /**
      * @return int
@@ -149,5 +162,55 @@ class Quest extends AbstractModel
     {
         $this->description = $description;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProgress()
+    {
+        return $this->progress;
+    }
+
+    /**
+     * @param int $progress
+     * @return $this
+     */
+    public function setProgress($progress)
+    {
+        $this->progress = $progress;
+        return $this;
+    }
+
+    /**
+     * @return Collection|QuestStep[]
+     */
+    public function getQuestSteps()
+    {
+        return $this->questSteps;
+    }
+
+    /**
+     * @param Collection|QuestStep[] $questSteps
+     * @return $this
+     */
+    public function setQuestSteps($questSteps)
+    {
+        $this->questSteps = $questSteps;
+        return $this;
+    }
+
+    /**
+     * This method is called via reflection, so it doesn't need to (and shouldn't) be exposed
+     * It prevents the properties progress and questSteps to be null
+     *
+     * @JMS\PostDeserialize
+     */
+    private function postDeserialize()
+    {
+        if (is_null($this->progress)) {
+            $this->progress = 0;
+        }
+        $this->questSteps = new ArrayCollection(is_null($this->questSteps) ? [] : $this->questSteps);
     }
 }

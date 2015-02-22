@@ -370,4 +370,18 @@ class Client extends GuzzleClient implements ClientInterface
     {
         return $this->getResourceList(URIUtils::parseUri(self::QUESTS_ROUTE), 'quests', 'Wonnova\SDK\Model\Quest');
     }
+
+    /**
+     * Returns all the quests with which a user is involved with, including the list of their steps
+     *
+     * @param User|string $user A User model or userId
+     * @return Collection|Quest[]
+     */
+    public function getUserStatusInQuests($user)
+    {
+        $userId = $user instanceof User ? $user->getUserId() : $user;
+        return $this->getResourceList(URIUtils::parseUri(self::USER_QUESTS_STATUS_ROUTE, [
+            'userId' => $userId
+        ]), 'quests', 'Wonnova\SDK\Model\Quest');
+    }
 }
