@@ -143,6 +143,7 @@ class ClientTest extends TestCase
         $this->subscriber->addResponse(new Response(200, [], $body));
 
         $badges = $this->client->getUserBadges('');
+        $this->assertCount(2, $badges);
         foreach ($badges as $key => $badge) {
             $this->assertEquals($badgesData[$key]['id'], $badge->getId());
             $this->assertEquals($badgesData[$key]['type'], $badge->getType());
@@ -151,6 +152,25 @@ class ClientTest extends TestCase
             $this->assertEquals($badgesData[$key]['name'], $badge->getName());
             $this->assertEquals($badgesData[$key]['description'], $badge->getDescription());
         }
+    }
+
+    public function testGetUserAchievements()
+    {
+        $achievementsData = json_decode(
+            file_get_contents(__DIR__ . '/../dummy_response_data/getUserAchievements.json'),
+            true
+        );
+        $achievementsData = $achievementsData['achievements'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserAchievements.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $achievements = $this->client->getUserAchievements('');
+        $this->assertCount(2, $achievements);
+        $this->assertEquals(Achievement::TYPE_POINTS, $achievements->get(0)->getType());
+        $this->assertEquals(165, $achievements->get(0)->getValue());
+        $this->assertEquals(Achievement::TYPE_BADGE, $achievements->get(1)->getType());
+        $this->assertEquals(2, $achievements->get(1)->getValue());
     }
 
     public function testGetQuests()
@@ -162,6 +182,7 @@ class ClientTest extends TestCase
         $this->subscriber->addResponse(new Response(200, [], $body));
 
         $quests = $this->client->getQuests();
+        $this->assertCount(3, $quests);
         foreach ($quests as $key => $quest) {
             $this->assertEquals($questsData[$key]['id'], $quest->getId());
             $this->assertInstanceof('DateTime', $quest->getStartDate());
