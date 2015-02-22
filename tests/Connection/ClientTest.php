@@ -8,6 +8,7 @@ use GuzzleHttp\Subscriber\Mock;
 use PHPUnit_Framework_TestCase as TestCase;
 use Wonnova\SDK\Auth\Credentials;
 use Wonnova\SDK\Connection\Client;
+use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\User;
 
 class ClientTest extends TestCase
@@ -115,5 +116,21 @@ class ClientTest extends TestCase
     public function testUpdateUserWithoutIdThrowsException()
     {
         $this->client->updateUser(new User());
+    }
+
+    public function testGetUserNotifications()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserNotifications.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $notifications = $this->client->getUserNotifications('');
+        $this->assertCount(3, $notifications);
+        $this->assertEquals(Achievement::TYPE_POINTS, $notifications->get(0)->getType());
+        $this->assertEquals('First pending notification', $notifications->get(0)->getMessage());
+        $this->assertEquals(Achievement::TYPE_POINTS, $notifications->get(1)->getType());
+        $this->assertEquals('Second pending notification', $notifications->get(1)->getMessage());
+        $this->assertEquals(Achievement::TYPE_BADGE, $notifications->get(2)->getType());
+        $this->assertEquals('Third pending notification', $notifications->get(2)->getMessage());
     }
 }
