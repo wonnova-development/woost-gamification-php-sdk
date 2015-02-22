@@ -1,0 +1,21 @@
+{
+    "status": "0",
+    "badges": [
+        {
+            "id": "3",
+            "type": "first_occurrence",
+            "notificationDate": "2013-11-10T23:44:13+0100",
+            "imageUrl": "https://secure.wonnova.com/rest/badges/3/image",
+            "name": "First occurrenced",
+            "description": "First login!!"
+        },
+        {
+            "id": "269",
+            "type": "repetition",
+            "notificationDate": "2013-11-10T23:44:13+0100",
+            "imageUrl": "https://secure.wonnova.com/rest/badges/269/image",
+            "name": "1000 Comments",
+            "description": "Thank you for continuing commenting"
+        }
+    ]
+}

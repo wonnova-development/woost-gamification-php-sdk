@@ -134,6 +134,25 @@ class ClientTest extends TestCase
         $this->assertEquals('Third pending notification', $notifications->get(2)->getMessage());
     }
 
+    public function testGetUserBadges()
+    {
+        $badgesData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getUserBadges.json'), true);
+        $badgesData = $badgesData['badges'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserBadges.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $badges = $this->client->getUserBadges('');
+        foreach ($badges as $key => $badge) {
+            $this->assertEquals($badgesData[$key]['id'], $badge->getId());
+            $this->assertEquals($badgesData[$key]['type'], $badge->getType());
+            $this->assertInstanceOf('DateTime', $badge->getNotificationDate());
+            $this->assertEquals($badgesData[$key]['imageUrl'], $badge->getImageUrl());
+            $this->assertEquals($badgesData[$key]['name'], $badge->getName());
+            $this->assertEquals($badgesData[$key]['description'], $badge->getDescription());
+        }
+    }
+
     public function testGetQuests()
     {
         $questsData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getQuests.json'), true);
