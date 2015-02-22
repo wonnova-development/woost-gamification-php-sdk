@@ -18,6 +18,7 @@ use Wonnova\SDK\Exception\NotFoundException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Notification;
+use Wonnova\SDK\Model\QuestStep;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
@@ -268,16 +269,9 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserNotifications($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
+        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
             'userId' => $userId
-        ]));
-        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
-        $contents = $this->serializer->serialize($contents['notifications'], 'json');
-        return new ArrayCollection($this->serializer->deserialize(
-            $contents,
-            'array<Wonnova\SDK\Model\Notification>',
-            'json'
-        ));
+        ]), 'notifications', 'Wonnova\SDK\Model\Notification');
     }
 
     /**
@@ -289,16 +283,9 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserBadges($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_BADGES_ROUTE, [
+        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
             'userId' => $userId
-        ]));
-        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
-        $contents = $this->serializer->serialize($contents['badges'], 'json');
-        return new ArrayCollection($this->serializer->deserialize(
-            $contents,
-            'array<Wonnova\SDK\Model\Badge>',
-            'json'
-        ));
+        ]), 'badges', 'Wonnova\SDK\Model\Badge');
     }
 
     /**
@@ -314,15 +301,29 @@ class Client extends GuzzleClient implements ClientInterface
         $userId = $user instanceof User ? $user->getUserId() : $user;
         $types = empty($types) ? Achievement::getAllTypesList() : $types;
         $types = is_array($types) ? implode(',', $types) : $types;
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
+
+        return $this->getUserSubresourceList(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
             'userId' => $userId,
             'types' => $types
-        ]));
+        ]), 'achievements', 'Wonnova\SDK\Model\Achievement');
+    }
+
+    /**
+     * Fetches a route and maps a user's subresource list of models
+     *
+     * @param $route
+     * @param $resourceKey
+     * @param $resourceClass
+     * @return ArrayCollection
+     */
+    protected function getUserSubresourceList($route, $resourceKey, $resourceClass)
+    {
+        $response = $this->connect('GET', $route);
         $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
-        $contents = $this->serializer->serialize($contents['achievements'], 'json');
+        $contents = $this->serializer->serialize($contents[$resourceKey], 'json');
         return new ArrayCollection($this->serializer->deserialize(
             $contents,
-            'array<Wonnova\SDK\Model\Achievement>',
+            sprintf('array<%s>', $resourceClass),
             'json'
         ));
     }
