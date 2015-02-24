@@ -59,8 +59,8 @@ class QuestStepTest extends TestCase
     public function testCompleted()
     {
         $expected = false;
-        $this->assertNull($this->questStep->getCompleted());
+        $this->assertNull($this->questStep->isCompleted());
         $this->assertSame($this->questStep, $this->questStep->setCompleted($expected));
-        $this->assertEquals($expected, $this->questStep->getCompleted());
+        $this->assertEquals($expected, $this->questStep->isCompleted());
     }
 }

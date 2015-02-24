@@ -42,7 +42,7 @@ class QuestStep extends AbstractModel
      */
     private $description;
     /**
-     * @var bool
+     * @var boolean
      * @JMS\Type("boolean")
      */
     private $completed;
@@ -138,9 +138,9 @@ class QuestStep extends AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
-    public function getCompleted()
+    public function isCompleted()
     {
         return $this->completed;
     }

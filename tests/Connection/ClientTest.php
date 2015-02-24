@@ -187,7 +187,7 @@ class ClientTest extends TestCase
             $this->assertEquals($progressData[$key]['code'], $questStep->getCode());
             $this->assertEquals($progressData[$key]['name'], $questStep->getName());
             $this->assertEquals($progressData[$key]['description'], $questStep->getDescription());
-            $this->assertEquals($progressData[$key]['completed'], $questStep->getCompleted());
+            $this->assertEquals($progressData[$key]['completed'], $questStep->isCompleted());
         }
     }
 
