@@ -85,6 +85,21 @@ $wonnovaClient = new \Wonnova\SDK\Connection\Client(
 
 ...
 
+### Future compatibility
+
+If for some reason Wonnova has to publish a new version of the API with new endpoints before a new version of this SDK is published and you need to consume those new endpoints, there is a way to do it.
+
+Using the public `connect` method, you will get a raw response of any route request. You won't get mapped objects, but you will be able to manually parse the response and work with it.
+
+```php
+$method = 'GET';
+$route = '/foo/bar/' . $userId;
+
+// This response object is a GuzzleHttp\Message\ResponseInterface instance
+$response = $wonnovaClient->connect($method, $route);
+$data = json_decode($response->getBody()->getContents(), true);
+```
+
 ### Dependency injection
 
 If you need to depend on Wonnova's Client object, always use the `Wonnova\SDK\Connection\ClientInterface` instead of the concrete `Client` object. This way you will be able to replace the object in case of need.

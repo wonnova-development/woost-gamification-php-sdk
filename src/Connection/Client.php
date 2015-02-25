@@ -104,7 +104,7 @@ class Client extends GuzzleClient implements ClientInterface
      * @throws \Wonnova\SDK\Exception\NotFoundException
      * @throws \GuzzleHttp\Exception\ClientException
      */
-    private function connect($method, $route, array $options = [])
+    public function connect($method, $route, array $options = [])
     {
         try {
             // Perform authentication if token has not been set yet

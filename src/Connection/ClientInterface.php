@@ -23,5 +23,17 @@ interface ClientInterface extends
     QuestsAPIInterface,
     TeamsAPIInterface
 {
-
+    /**
+     * Performs a connection to defined endpoint with defined options
+     *
+     * @param $method
+     * @param $route
+     * @param array $options
+     * @return \GuzzleHttp\Message\ResponseInterface
+     * @throws \Wonnova\SDK\Exception\ServerException
+     * @throws \Wonnova\SDK\Exception\InvalidRequestException
+     * @throws \Wonnova\SDK\Exception\NotFoundException
+     * @throws \GuzzleHttp\Exception\ClientException
+     */
+    public function connect($method, $route, array $options = []);
 }
