@@ -23,6 +23,7 @@ use Wonnova\SDK\Model\Level;
 use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\Quest;
 use Wonnova\SDK\Model\QuestStep;
+use Wonnova\SDK\Model\Team;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
@@ -422,5 +423,33 @@ class Client extends GuzzleClient implements ClientInterface
         $contents = $response->getBody()->getContents();
         $contents = $this->serializer->deserialize($contents, 'array', 'json');
         return $this->serializer->deserialize($contents['level'], 'Wonnova\SDK\Model\Level', 'array');
+    }
+
+    /**
+     * Returns the list of top teams ordered by total score of their members
+     * If a user is provided, the list will include the team of that user, even if it is not in the top list
+     *
+     * @param int|null $maxCount Maximum number of results
+     * @param User|string|null $user A User model or userId
+     * @return Collection|Team[]
+     */
+    public function getTeamsLeaderboard($maxCount = null, $user = null)
+    {
+        $routeParams = [
+            'userId' => '',
+            'maxCount' => ''
+        ];
+        if (is_int($maxCount)) {
+            $routeParams['maxCount'] = $maxCount;
+        }
+        if (isset($user)) {
+            $routeParams['userId'] = $user instanceof User ? $user->getUserId() : $user;
+        }
+
+        return $this->getResourceList(
+            URIUtils::parseUri(self::TEAMS_LEADERBOARD_ROUTE, $routeParams),
+            'scores',
+            'Wonnova\SDK\Model\Team'
+        );
     }
 }
