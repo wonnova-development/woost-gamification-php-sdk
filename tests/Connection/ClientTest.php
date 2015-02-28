@@ -347,4 +347,15 @@ class ClientTest extends TestCase
         $this->assertEquals('http://www.avatar.com/john.doe', $user->getAvatar());
         $this->assertEquals(175, $user->getScore());
     }
+
+    public function testGetInteractionStatus()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getInteractionStatus.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $data = $this->client->getInteractionStatus('', '', '', '');
+        $this->assertEquals(0, $data['score']);
+        $this->assertEquals('ok', $data['message']);
+    }
 }

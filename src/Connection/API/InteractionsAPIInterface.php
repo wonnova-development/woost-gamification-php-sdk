@@ -11,7 +11,8 @@ use Wonnova\SDK\Model\User;
  */
 interface InteractionsAPIInterface
 {
-    const INTERACTION_NOTIFICATION_ROUTE = '/interactions/notification';
+    const INTERACTION_NOTIFICATION_ROUTE    = '/interactions/notification';
+    const INTERACTION_STATUS_ROUTE          = '/interactions/status';
 
     /**
      * Performs an interaction notification between two users
@@ -19,9 +20,20 @@ interface InteractionsAPIInterface
      * @param User|string $user A User model or userId
      * @param User|string $targetUser A User model or userId
      * @param string $interactionCode
-     * @param Item|null $item An Item model or itemId
+     * @param Item|string|null $item An Item model or itemId
      * @param array $categories
      * @return void
      */
     public function notifyInteraction($user, $targetUser, $interactionCode, $item = null, array $categories = []);
+
+    /**
+     * Returns information about the status of an interactionaccording to its limits
+     *
+     * @param User|string $user A User model or userId
+     * @param User|string $targetUser A User model or userId
+     * @param string $interactionCode
+     * @param Item|string $item An Item model or itemId
+     * @return array
+     */
+    public function getInteractionStatus($user, $targetUser, $interactionCode, $item);
 }

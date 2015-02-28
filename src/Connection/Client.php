@@ -639,4 +639,42 @@ class Client extends GuzzleClient implements ClientInterface
         $contents = $response->getBody()->getContents();
         return $this->serializer->deserialize($contents, 'array', 'json')['occurrences'];
     }
+
+    /**
+     * Returns information about the status of an interactionaccording to its limits
+     *
+     * @param User|string $user A User model or userId
+     * @param User|string $targetUser A User model or userId
+     * @param string $interactionCode
+     * @param Item|string $item An Item model or itemId
+     * @return array
+     */
+    public function getInteractionStatus($user, $targetUser, $interactionCode, $item)
+    {
+        // Prepare request body
+        $requestData = [
+            'user' => $user instanceof User ? $user->getUserId() : $user,
+            'targetUser' => [
+                'id' => $targetUser instanceof User ? $targetUser->getUserId() : $targetUser
+            ],
+            'interactionCode' => $interactionCode,
+            'item' => $item instanceof Item ? $item->toArray() : [
+                'id' => $item
+            ]
+        ];
+
+        $response = $this->connect('POST', URIUtils::parseUri(self::INTERACTION_STATUS_ROUTE), [
+            'json' => $requestData
+        ]);
+        $contents = $response->getBody()->getContents();
+        $responseData = $this->serializer->deserialize($contents, 'array', 'json');
+
+        // Process response properties
+        unset($responseData['status']);
+        if (! isset($responseData['score'])) {
+            $responseData['score'] = 0;
+        }
+
+        return $responseData;
+    }
 }
