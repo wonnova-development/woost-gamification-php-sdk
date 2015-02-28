@@ -33,7 +33,7 @@ interface ClientInterface extends
      * @throws \Wonnova\SDK\Exception\ServerException
      * @throws \Wonnova\SDK\Exception\InvalidRequestException
      * @throws \Wonnova\SDK\Exception\NotFoundException
-     * @throws \GuzzleHttp\Exception\ClientException
+     * @throws \Wonnova\SDK\Exception\RuntimeException
      */
     public function connect($method, $route, array $options = []);
 }

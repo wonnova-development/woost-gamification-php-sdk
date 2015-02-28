@@ -15,6 +15,7 @@ use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Exception\InvalidArgumentException;
 use Wonnova\SDK\Exception\InvalidRequestException;
 use Wonnova\SDK\Exception\NotFoundException;
+use Wonnova\SDK\Exception\RuntimeException;
 use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
@@ -102,7 +103,7 @@ class Client extends GuzzleClient implements ClientInterface
      * @throws \Wonnova\SDK\Exception\ServerException
      * @throws \Wonnova\SDK\Exception\InvalidRequestException
      * @throws \Wonnova\SDK\Exception\NotFoundException
-     * @throws \GuzzleHttp\Exception\ClientException
+     * @throws \Wonnova\SDK\Exception\RuntimeException
      */
     public function connect($method, $route, array $options = [])
     {
@@ -117,7 +118,9 @@ class Client extends GuzzleClient implements ClientInterface
 
             return $this->send($this->createRequest($method, $route, $options));
         } catch (ClientException $e) {
-            switch ($e->getCode()) {
+            $code = $e->getCode();
+
+            switch ($code) {
                 case 401: // Token not valid. Reconect
                     $message = json_decode($e->getResponse()->getBody()->getContents(), true);
 
@@ -135,7 +138,7 @@ class Client extends GuzzleClient implements ClientInterface
                             $method,
                             isset($message['message']) ? $message['message'] : ''
                         ),
-                        $e->getCode(),
+                        $code,
                         $e
                     );
                 case 400:
@@ -147,17 +150,25 @@ class Client extends GuzzleClient implements ClientInterface
                             $method,
                             $message['message']
                         ),
-                        $e->getCode(),
+                        $code,
                         $e
                     );
                 case 404:
                     throw new NotFoundException(
                         sprintf('Route "%s" with method "%s" was not found', $route, $method),
-                        $e->getCode(),
+                        $code,
                         $e
                     );
                 default:
-                    throw $e;
+                    throw new RuntimeException(
+                        sprintf(
+                            'Unexpected error occurred whith request to route "%s" with method "%s"',
+                            $route,
+                            $method
+                        ),
+                        $code,
+                        $e
+                    );
             }
         } catch (ServerException $e) {
             throw new \Wonnova\SDK\Exception\ServerException(

@@ -6,7 +6,7 @@ namespace Wonnova\SDK\Exception;
  * @author Wonnova
  * @link http://www.wonnova.com
  */
-class ServerException extends \RuntimeException implements ExceptionInterface
+class ServerException extends RuntimeException
 {
 
 }
