@@ -477,7 +477,27 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function rateItem($user, $item, $score = 0)
     {
-        // TODO: Implement rateItem() method.
+        $data = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'points' => $score,
+            'item' => $item instanceof Item ? $item->toArray() : [
+                'id' => $item
+            ]
+        ];
+        $response = $this->connect('POST', URIUtils::parseUri(self::ITEM_RATE_ROUTE), [
+            'json' => $data
+        ]);
+        $contents = $response->getBody()->getContents();
+        $itemData = $this->serializer->deserialize($contents, 'array', 'json');
+
+        // If an Item wasn't provided, create a new Item instance
+        if (! $item instanceof Item) {
+            $item = new Item();
+        }
+
+        // Refresh the Item's data and return it
+        $item->fromArray($itemData['item']);
+        return $item;
     }
 
     /**
