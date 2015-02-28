@@ -19,7 +19,7 @@ include __DIR__ . '/../vendor/autoload.php';
 
 // Create the client and inject a Credentials instance on it with your private key
 $wonnovaClient = new \Wonnova\SDK\Connection\Client(
-    new \Wonnova\SDK\Auth\Credentials('AaBbCcDd123456')
+    new \Wonnova\SDK\Auth\Credentials(['key' => 'AaBbCcDd123456'])
 );
 
 // After this point, you are able to perform requests to the API
@@ -75,7 +75,7 @@ $cacheAdapter = new \Doctrine\Common\Cache\MemecachedCache();
 $cacheAdapter->setMemcached($memcached);
 
 $wonnovaClient = new \Wonnova\SDK\Connection\Client(
-    new \Wonnova\SDK\Auth\Credentials('AaBbCcDd123456'),
+    new \Wonnova\SDK\Auth\Credentials(['key' => 'AaBbCcDd123456']),
     'es',
     $cacheAdapter
 );
@@ -111,7 +111,7 @@ An example.
 ```php
 // Create a client instance
 $wonnovaClient = new \Wonnova\SDK\Connection\Client(
-    new \Wonnova\SDK\Auth\Credentials('AaBbCcDd123456')
+    new \Wonnova\SDK\Auth\Credentials(['key' => 'AaBbCcDd123456'])
 );
 
 // Create a mock subscriber
