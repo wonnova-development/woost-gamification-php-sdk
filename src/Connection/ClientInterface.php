@@ -2,6 +2,7 @@
 namespace Wonnova\SDK\Connection;
 
 use Wonnova\SDK\Connection\API\ActionsAPIInterface;
+use Wonnova\SDK\Connection\API\BadgesAPIInterface;
 use Wonnova\SDK\Connection\API\InteractionsAPIInterface;
 use Wonnova\SDK\Connection\API\ItemsAPIInterface;
 use Wonnova\SDK\Connection\API\LevelsAPIInterface;
@@ -21,7 +22,8 @@ interface ClientInterface extends
     ItemsAPIInterface,
     LevelsAPIInterface,
     QuestsAPIInterface,
-    TeamsAPIInterface
+    TeamsAPIInterface,
+    BadgesAPIInterface
 {
     /**
      * Performs a connection to defined endpoint with defined options
