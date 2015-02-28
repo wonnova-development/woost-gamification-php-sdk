@@ -508,7 +508,10 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function deleteItem($item)
     {
-        // TODO: Implement deleteItem() method.
+        $itemId = $item instanceof Item ? $item->getItemId() : $item;
+        $this->connect('DELETE', URIUtils::parseUri(self::ITEM_ROUTE, [
+            'itemId' => $itemId
+        ]));
     }
 
     /**
@@ -519,6 +522,9 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function resetItemScore($item)
     {
-        // TODO: Implement resetItemScore() method.
+        $itemId = $item instanceof Item ? $item->getItemId() : $item;
+        $this->connect('PUT', URIUtils::parseUri(self::ITEM_RESET_SCORE_ROUTE, [
+            'itemId' => $itemId
+        ]));
     }
 }
