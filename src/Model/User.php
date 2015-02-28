@@ -11,6 +11,16 @@ use JMS\Serializer\Annotation as JMS;
 class User extends AbstractModel
 {
     /**
+     * Used to map virtual to real fields
+     *
+     * @var array
+     * @JMS\Exclude()
+     */
+    protected $fieldMapping = [
+        'points' => 'score'
+    ];
+
+    /**
      * @var string
      * @JMS\Type("string")
      */
@@ -85,6 +95,12 @@ class User extends AbstractModel
      * @JMS\Type("string")
      */
     private $timezone;
+    /**
+     * @var integer
+     * @JMS\Type("integer")
+     * @JMS\SerializedName("points")
+     */
+    private $score;
 
     /**
      * @return string
@@ -365,6 +381,24 @@ class User extends AbstractModel
     }
 
     /**
+     * @return integer
+     */
+    public function getScore()
+    {
+        return $this->score;
+    }
+
+    /**
+     * @param integer $score
+     * @return $this
+     */
+    public function setScore($score)
+    {
+        $this->score = $score;
+        return $this;
+    }
+
+    /**
      * Returns a copy data array of this object
      *
      * @return array
@@ -388,7 +422,8 @@ class User extends AbstractModel
             'phone' => $this->phone,
             'gender' => $this->gender,
             'locale' => $this->locale,
-            'timezone' => $this->timezone
+            'timezone' => $this->timezone,
+            'score' => $this->score
         ];
     }
 }
