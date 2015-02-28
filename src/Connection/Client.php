@@ -381,7 +381,11 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getQuests()
     {
-        return $this->getResourceCollection(URIUtils::parseUri(self::QUESTS_ROUTE), 'quests', 'Wonnova\SDK\Model\Quest');
+        return $this->getResourceCollection(
+            URIUtils::parseUri(self::QUESTS_ROUTE),
+            'quests',
+            'Wonnova\SDK\Model\Quest'
+        );
     }
 
     /**
@@ -403,7 +407,11 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getLevels()
     {
-        return $this->getResourceCollection(URIUtils::parseUri(self::LEVELS_ROUTE), 'levels', 'Wonnova\SDK\Model\Level');
+        return $this->getResourceCollection(
+            URIUtils::parseUri(self::LEVELS_ROUTE),
+            'levels',
+            'Wonnova\SDK\Model\Level'
+        );
     }
 
     /**
