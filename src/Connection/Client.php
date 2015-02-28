@@ -220,11 +220,10 @@ class Client extends GuzzleClient implements ClientInterface
     {
         $response = $this->connect('GET', $route);
         $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
-        $contents = $this->serializer->serialize($contents[$resourceKey], 'json');
         return new ArrayCollection($this->serializer->deserialize(
-            $contents,
+            $contents[$resourceKey],
             sprintf('array<%s>', $resourceClass),
-            'json'
+            'array'
         ));
     }
 

@@ -30,20 +30,29 @@ class DateTimeHandler implements SubscribingHandlerInterface
      */
     public static function getSubscribingMethods()
     {
-        return [
-            [
-                'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
-                'format' => 'json',
-                'type' => 'WonnovaDateTime',
-                'method' => 'deserializeWonnovaDateTime',
-            ],
-            [
-                'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
-                'format' => 'json',
-                'type' => 'StringDateTime',
-                'method' => 'deserializeStringDateTime',
-            ]
+        $wonnovaDateTimeDeserializationStrategyConfig = [
+            'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
+            'type' => 'WonnovaDateTime',
+            'method' => 'deserializeWonnovaDateTime',
         ];
+        $stringDateTimeDeserializationStrategyConfig = [
+            'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
+            'type' => 'StringDateTime',
+            'method' => 'deserializeStringDateTime',
+        ];
+
+        return [
+            static::getArrayWithFormat($wonnovaDateTimeDeserializationStrategyConfig),
+            static::getArrayWithFormat($wonnovaDateTimeDeserializationStrategyConfig, 'array'),
+            static::getArrayWithFormat($stringDateTimeDeserializationStrategyConfig),
+            static::getArrayWithFormat($stringDateTimeDeserializationStrategyConfig, 'array')
+        ];
+    }
+
+    private static function getArrayWithFormat($array, $format = 'json')
+    {
+        $array['format'] = $format;
+        return $array;
     }
 
     public function deserializeWonnovaDateTime(
