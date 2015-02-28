@@ -256,4 +256,23 @@ class ClientTest extends TestCase
         $this->assertInstanceOf('Wonnova\SDK\Model\Scenario', $level->getScenario());
         $this->assertEquals('VCM', $level->getScenario()->getName());
     }
+
+    public function testGetTeamsLeaderboard()
+    {
+        $teamsData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getTeamsLeaderboard.json'), true);
+        $teamsData = $teamsData['scores'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getTeamsLeaderboard.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $teams = $this->client->getTeamsLeaderboard();
+        $this->assertCount(4, $teams);
+        foreach ($teams as $key => $team) {
+            $this->assertEquals($teamsData[$key]['teamName'], $team->getTeamName());
+            $this->assertEquals($teamsData[$key]['avatar'], $team->getAvatar());
+            $this->assertEquals($teamsData[$key]['description'], $team->getDescription());
+            $this->assertEquals($teamsData[$key]['position'], $team->getPosition());
+            $this->assertEquals($teamsData[$key]['score'], $team->getScore());
+        }
+    }
 }
