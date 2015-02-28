@@ -19,6 +19,7 @@ use Wonnova\SDK\Exception\RuntimeException;
 use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
+use Wonnova\SDK\Model\Level;
 use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\Quest;
 use Wonnova\SDK\Model\QuestStep;
@@ -393,5 +394,13 @@ class Client extends GuzzleClient implements ClientInterface
         return $this->getResourceList(URIUtils::parseUri(self::USER_QUESTS_STATUS_ROUTE, [
             'userId' => $userId
         ]), 'quests', 'Wonnova\SDK\Model\Quest');
+    }
+
+    /**
+     * @return Collection|Level[]
+     */
+    public function getLevels()
+    {
+        return $this->getResourceList(URIUtils::parseUri(self::LEVELS_ROUTE), 'levels', 'Wonnova\SDK\Model\Level');
     }
 }
