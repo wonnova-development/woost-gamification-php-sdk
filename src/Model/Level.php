@@ -139,7 +139,7 @@ class Level extends AbstractModel
     /**
      * @return boolean
      */
-    public function isGeneratesNotification()
+    public function getGeneratesNotification()
     {
         return $this->generatesNotification;
     }
@@ -209,7 +209,7 @@ class Level extends AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return Badge
      */
     public function getBadge()
     {
@@ -227,7 +227,7 @@ class Level extends AbstractModel
     }
 
     /**
-     * @return mixed
+     * @return Scenario
      */
     public function getScenario()
     {

@@ -210,4 +210,32 @@ class ClientTest extends TestCase
             $this->assertEquals($questsData[$key]['description'], $quest->getDescription());
         }
     }
+
+    public function testGetLevels()
+    {
+        $levelsData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getLevels.json'), true);
+        $levelsData = $levelsData['levels'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getLevels.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $levels = $this->client->getLevels();
+        $this->assertCount(2, $levels);
+        foreach ($levels as $key => $level) {
+            $this->assertEquals($levelsData[$key]['id'], $level->getId());
+            $this->assertEquals($levelsData[$key]['code'], $level->getCode());
+            $this->assertEquals($levelsData[$key]['name'], $level->getName());
+            $this->assertEquals($levelsData[$key]['score'], $level->getScore());
+            $this->assertEquals($levelsData[$key]['generatesNotification'], $level->getGeneratesNotification());
+            $this->assertEquals($levelsData[$key]['categoryEnabled'], $level->isCategoryEnabled());
+            $this->assertEquals($levelsData[$key]['imageUrl'], $level->getImageUrl());
+            $this->assertInstanceOf('DateTime', $level->getDateCreated());
+            if (! is_null($level->getBadge())) {
+                $this->assertInstanceOf('Wonnova\SDK\Model\Badge', $level->getBadge());
+            }
+            if (! is_null($level->getScenario())) {
+                $this->assertInstanceOf('Wonnova\SDK\Model\Scenario', $level->getScenario());
+            }
+        }
+    }
 }
