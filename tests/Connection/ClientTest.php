@@ -315,6 +315,7 @@ class ClientTest extends TestCase
         // Set mocked response
         $body = new Stream(fopen('data://text/plain,[]', 'r'));
         $this->subscriber->addResponse(new Response(200, [], $body));
+
         $this->client->deleteItem('');
         // If we reach this point, the everything worked
         $this->assertTrue(true);
@@ -325,8 +326,25 @@ class ClientTest extends TestCase
         // Set mocked response
         $body = new Stream(fopen('data://text/plain,[]', 'r'));
         $this->subscriber->addResponse(new Response(200, [], $body));
+
         $this->client->resetItemScore('');
         // If we reach this point, the everything worked
         $this->assertTrue(true);
+    }
+
+    public function testGetUserData()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserData.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $expectedId = '12345';
+        $user = $this->client->getUserData($expectedId);
+
+        $this->assertEquals($expectedId, $user->getUserId());
+        $this->assertEquals('john.doe', $user->getUsername());
+        $this->assertEquals('John Doe', $user->getFullName());
+        $this->assertEquals('http://www.avatar.com/john.doe', $user->getAvatar());
+        $this->assertEquals(175, $user->getScore());
     }
 }

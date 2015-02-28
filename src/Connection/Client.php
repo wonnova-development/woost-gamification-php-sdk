@@ -535,4 +535,27 @@ class Client extends GuzzleClient implements ClientInterface
             'itemId' => $itemId
         ]));
     }
+
+    /**
+     * Returns a partial model of certain user defined by its userId
+     * By calling this method, only the properties username, fullName, avatar and score of the User will be popullated,
+     * as well as the provided userId
+     *
+     * @param $userId
+     * @return User
+     */
+    public function getUserData($userId)
+    {
+        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ABOUT_ROUTE, [
+            'userId' => $userId
+        ]));
+        $contents = $response->getBody()->getContents();
+        $responseData = $this->serializer->deserialize($contents, 'array', 'json');
+
+        // Create the User model to be returned and populate it
+        $user = new User();
+        $user->fromArray($responseData['userData']);
+        $user->setUserId($userId);
+        return $user;
+    }
 }

@@ -16,14 +16,15 @@ use Wonnova\SDK\Model\User;
  */
 interface UsersAPIInterface
 {
-    const USERS_ROUTE = '/users';
-    const USER_ROUTE = '/users?userId=%userId%';
-    const UPDATE_USER_ROUTE = '/users/%userId%';
-    const USER_NOTIFICATIONS_ROUTE = '/users/%userId%/notifications';
-    const USER_BADGES_ROUTE = '/users/%userId%/badges';
-    const USER_ACHIEVEMENTS_ROUTE = '/users/%userId%/achievements?types=%types%';
+    const USERS_ROUTE               = '/users';
+    const USER_ROUTE                = '/users?userId=%userId%';
+    const UPDATE_USER_ROUTE         = '/users/%userId%';
+    const USER_NOTIFICATIONS_ROUTE  = '/users/%userId%/notifications';
+    const USER_BADGES_ROUTE         = '/users/%userId%/badges';
+    const USER_ACHIEVEMENTS_ROUTE   = '/users/%userId%/achievements?types=%types%';
     const USER_QUEST_PROGRESS_ROUTE = '/users/%userId%/quests/%questCode%/progress';
-    const USER_QUESTS_STATUS_ROUTE = '/users/%userId%/quests/status';
+    const USER_QUESTS_STATUS_ROUTE  = '/users/%userId%/quests/status';
+    const USER_ABOUT_ROUTE          = '/users/%userId%/about';
 
     /**
      * Returns users list
@@ -96,4 +97,14 @@ interface UsersAPIInterface
      * @return Collection|Quest[]
      */
     public function getUserStatusInQuests($user);
+
+    /**
+     * Returns a partial model of certain user defined by its userId
+     * By calling this method, only the properties username, fullName, avatar and score of the User will be popullated,
+     * as well as the provided userId
+     *
+     * @param $userId
+     * @return User
+     */
+    public function getUserData($userId);
 }
