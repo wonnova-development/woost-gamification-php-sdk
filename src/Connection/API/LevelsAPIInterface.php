@@ -3,6 +3,7 @@ namespace Wonnova\SDK\Connection\API;
 
 use Doctrine\Common\Collections\Collection;
 use Wonnova\SDK\Model\Level;
+use Wonnova\SDK\Model\User;
 
 /**
  * Interface LevelsAPIInterface
@@ -12,9 +13,21 @@ use Wonnova\SDK\Model\Level;
 interface LevelsAPIInterface
 {
     const LEVELS_ROUTE = '/levels';
+    const USER_LEVEL_ROUTE = '/levels/users/%userId%/scenarios/%scenarioCode%';
 
     /**
+     * Returns the list of previously created Levels
+     *
      * @return Collection|Level[]
      */
     public function getLevels();
+
+    /**
+     * Returns the level of a user in certain scenario
+     *
+     * @param User|string $user A User model or userId
+     * @param string $scenarioCode
+     * @return Level
+     */
+    public function getUserLevelInScenario($user, $scenarioCode);
 }
