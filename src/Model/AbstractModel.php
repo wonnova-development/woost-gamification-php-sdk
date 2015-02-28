@@ -25,14 +25,16 @@ abstract class AbstractModel implements ArraySerializableInterface, \JsonSeriali
     public function fromArray(array $data)
     {
         foreach ($data as $property => $value) {
-            // Rename field if map is defined
-            if (isset($this->fieldMapping[$property])) {
-                $property = $this->fieldMapping[$property];
-            }
-
             $setter = 'set' . ucfirst($property);
             if (method_exists($this, $setter)) {
                 $this->{$setter}($value);
+            } elseif (isset($this->fieldMapping[$property])) {
+                // Try an alternative property from the mapping definition
+                $property = $this->fieldMapping[$property];
+                $setter = 'set' . ucfirst($property);
+                if (method_exists($this, $setter)) {
+                    $this->{$setter}($value);
+                }
             }
         }
     }
