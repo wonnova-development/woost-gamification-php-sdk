@@ -156,7 +156,7 @@ class Item extends AbstractModel
      */
     public function setDateCreated($dateCreated)
     {
-        $this->dateCreated = $dateCreated;
+        $this->dateCreated = is_string($dateCreated) ? new \DateTime($dateCreated) : $dateCreated;
         return $this;
     }
 

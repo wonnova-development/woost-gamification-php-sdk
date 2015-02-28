@@ -275,4 +275,38 @@ class ClientTest extends TestCase
             $this->assertEquals($teamsData[$key]['score'], $team->getScore());
         }
     }
+
+    public function testGetItemsLeaderboard()
+    {
+        $itemsData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getItemsLeaderboard.json'), true);
+        $itemsData = $itemsData['leaderboard'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getItemsLeaderboard.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $items = $this->client->getItemsLeaderboard();
+        $this->assertCount(3, $items);
+        foreach ($items as $key => $item) {
+            $this->assertEquals($itemsData[$key]['id'], $item->getItemId());
+            $this->assertEquals($itemsData[$key]['title'], $item->getTitle());
+            $this->assertEquals($itemsData[$key]['description'], $item->getDescription());
+            $this->assertEquals($itemsData[$key]['author'], $item->getAuthor());
+            $this->assertInstanceOf('DateTime', $item->getDateCreated());
+        }
+    }
+
+    public function testRateItem()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/rateItem.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $item = $this->client->rateItem('', '');
+        $this->assertEquals('3333', $item->getItemId());
+        $this->assertEquals('the title', $item->getTitle());
+        $this->assertNull($item->getDescription());
+        $this->assertNull($item->getAuthor());
+        $this->assertEquals(2400, $item->getScore());
+        $this->assertInstanceOf('DateTime', $item->getDateCreated());
+    }
 }

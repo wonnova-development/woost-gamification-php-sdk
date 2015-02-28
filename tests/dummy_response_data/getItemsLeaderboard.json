@@ -1,0 +1,28 @@
+{
+    "leaderboard": [
+        {
+            "id": "foobar",
+            "title": null,
+            "description": null,
+            "author": null,
+            "score": 2400,
+            "dateCreated": "2015-02-28T16:49:46+0100"
+        },
+        {
+            "id": "barfoo",
+            "title": "1",
+            "description": "",
+            "author": null,
+            "score": 2000,
+            "dateCreated": "2014-01-28T10:47:22+0100"
+        },
+        {
+            "id": "item",
+            "title": "3",
+            "description": "",
+            "author": "author_user_id",
+            "score": 0,
+            "dateCreated": "2015-01-28T10:47:22+0100"
+        }
+    ]
+}
