@@ -309,4 +309,24 @@ class ClientTest extends TestCase
         $this->assertEquals(2400, $item->getScore());
         $this->assertInstanceOf('DateTime', $item->getDateCreated());
     }
+
+    public function testDeleteItem()
+    {
+        // Set mocked response
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+        $this->client->deleteItem('');
+        // If we reach this point, the everything worked
+        $this->assertTrue(true);
+    }
+
+    public function resetItemScore()
+    {
+        // Set mocked response
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+        $this->client->resetItemScore('');
+        // If we reach this point, the everything worked
+        $this->assertTrue(true);
+    }
 }
