@@ -622,4 +622,21 @@ class Client extends GuzzleClient implements ClientInterface
             'json' => $requestData
         ]);
     }
+
+    /**
+     * Returns the number of times a user has performed certain action
+     *
+     * @param User|string $user A User model or userId
+     * @param string $actionCode
+     * @return int
+     */
+    public function getUserActionOccurrences($user, $actionCode)
+    {
+        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ACTION_OCCURRENCES_ROUTE, [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'actionCode' => $actionCode
+        ]));
+        $contents = $response->getBody()->getContents();
+        return $this->serializer->deserialize($contents, 'array', 'json')['occurrences'];
+    }
 }

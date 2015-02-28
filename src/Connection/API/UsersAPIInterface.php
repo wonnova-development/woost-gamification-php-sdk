@@ -16,15 +16,16 @@ use Wonnova\SDK\Model\User;
  */
 interface UsersAPIInterface
 {
-    const USERS_ROUTE               = '/users';
-    const USER_ROUTE                = '/users?userId=%userId%';
-    const UPDATE_USER_ROUTE         = '/users/%userId%';
-    const USER_NOTIFICATIONS_ROUTE  = '/users/%userId%/notifications';
-    const USER_BADGES_ROUTE         = '/users/%userId%/badges';
-    const USER_ACHIEVEMENTS_ROUTE   = '/users/%userId%/achievements?types=%types%';
-    const USER_QUEST_PROGRESS_ROUTE = '/users/%userId%/quests/%questCode%/progress';
-    const USER_QUESTS_STATUS_ROUTE  = '/users/%userId%/quests/status';
-    const USER_ABOUT_ROUTE          = '/users/%userId%/about';
+    const USERS_ROUTE                   = '/users';
+    const USER_ROUTE                    = '/users?userId=%userId%';
+    const UPDATE_USER_ROUTE             = '/users/%userId%';
+    const USER_NOTIFICATIONS_ROUTE      = '/users/%userId%/notifications';
+    const USER_BADGES_ROUTE             = '/users/%userId%/badges';
+    const USER_ACHIEVEMENTS_ROUTE       = '/users/%userId%/achievements?types=%types%';
+    const USER_QUEST_PROGRESS_ROUTE     = '/users/%userId%/quests/%questCode%/progress';
+    const USER_QUESTS_STATUS_ROUTE      = '/users/%userId%/quests/status';
+    const USER_ABOUT_ROUTE              = '/users/%userId%/about';
+    const USER_ACTION_OCCURRENCES_ROUTE = '/users/%userId%/actions/%actionCode%/occurrences';
 
     /**
      * Returns users list
@@ -107,4 +108,13 @@ interface UsersAPIInterface
      * @return User
      */
     public function getUserData($userId);
+
+    /**
+     * Returns the number of times a user has performed certain action
+     *
+     * @param User|string $user A User model or userId
+     * @param string $actionCode
+     * @return int
+     */
+    public function getUserActionOccurrences($user, $actionCode);
 }
