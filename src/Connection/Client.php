@@ -589,4 +589,37 @@ class Client extends GuzzleClient implements ClientInterface
             'json' => $requestData
         ]);
     }
+
+    /**
+     * Performs an interaction notification between two users
+     *
+     * @param User|string $user A User model or userId
+     * @param User|string $targetUser A User model or userId
+     * @param string $interactionCode
+     * @param Item|null $item An Item model or itemId
+     * @param array $categories
+     * @return void
+     */
+    public function notifyInteraction($user, $targetUser, $interactionCode, $item = null, array $categories = [])
+    {
+        // Prepare request body
+        $requestData = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'targetUserId' => $targetUser instanceof User ? $targetUser->getUserId() : $targetUser,
+            'interactionCode' => $interactionCode
+        ];
+        if (isset($item)) {
+            $requestData['item'] = $item instanceof Item ? $item->toArray() : [
+                'id' => $item
+            ];
+        }
+        if (! empty($categories)) {
+            $requestData['categories'] = $categories;
+        }
+
+        // Perform request
+        $this->connect('POST', URIUtils::parseUri(self::INTERACTION_NOTIFICATION_ROUTE), [
+            'json' => $requestData
+        ]);
+    }
 }

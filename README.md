@@ -37,11 +37,11 @@ try {
     echo $user->getUserId();
     
     // Make the user perform an action
+    // The userId can be used if you don't have access to the full User object
     $actionCode = 'LOGIN';
     $wonnovaClient->notifyAction($user, $actionCode);
     
-    // You can now get the list of your quests
-    // The userId can be used if you don't have access to the full User object
+    // You can now get the list of your quests and the status of the user in each one of them
     $quests = $wonnovaClient->getUserStatusInQuests($user);
     // This method returns an iterable collection of Quest instances, each one of them with the list of QuestSteps
     foreach ($quests as $quest) {
