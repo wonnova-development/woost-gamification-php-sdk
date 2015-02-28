@@ -558,4 +558,35 @@ class Client extends GuzzleClient implements ClientInterface
         $user->setUserId($userId);
         return $user;
     }
+
+    /**
+     * Performs an action notification from certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param string $actionCode
+     * @param Item|string $item An Item model or itemId
+     * @param array $categories
+     * @return void
+     */
+    public function notifyAction($user, $actionCode, $item = null, array $categories = [])
+    {
+        // Prepare request body
+        $requestData = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'actionCode' => $actionCode
+        ];
+        if (isset($item)) {
+            $requestData['item'] = $item instanceof Item ? $item->toArray() : [
+                'id' => $item
+            ];
+        }
+        if (! empty($categories)) {
+            $requestData['categories'] = $categories;
+        }
+
+        // Perform request
+        $this->connect('POST', URIUtils::parseUri(self::ACTION_NOTIFICATION_ROUTE), [
+            'json' => $requestData
+        ]);
+    }
 }
