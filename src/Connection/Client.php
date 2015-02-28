@@ -19,6 +19,7 @@ use Wonnova\SDK\Exception\RuntimeException;
 use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
+use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\Level;
 use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\Quest;
@@ -229,7 +230,7 @@ class Client extends GuzzleClient implements ClientInterface
      * @param $resourceClass
      * @return ArrayCollection
      */
-    protected function getResourceList($route, $resourceKey, $resourceClass)
+    protected function getResourceCollection($route, $resourceKey, $resourceClass)
     {
         $response = $this->connect('GET', $route);
         $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
@@ -318,7 +319,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserNotifications($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceList(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
+        return $this->getResourceCollection(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
             'userId' => $userId
         ]), 'notifications', 'Wonnova\SDK\Model\Notification');
     }
@@ -332,7 +333,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserBadges($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceList(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
+        return $this->getResourceCollection(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
             'userId' => $userId
         ]), 'badges', 'Wonnova\SDK\Model\Badge');
     }
@@ -351,7 +352,7 @@ class Client extends GuzzleClient implements ClientInterface
         $types = empty($types) ? Achievement::getAllTypesList() : $types;
         $types = is_array($types) ? implode(',', $types) : $types;
 
-        return $this->getResourceList(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
+        return $this->getResourceCollection(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
             'userId' => $userId,
             'types' => $types
         ]), 'achievements', 'Wonnova\SDK\Model\Achievement');
@@ -367,7 +368,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserProgressInQuest($user, $questCode)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceList(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
+        return $this->getResourceCollection(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
             'userId' => $userId,
             'questCode' => $questCode
         ]), 'questSteps', 'Wonnova\SDK\Model\QuestStep');
@@ -380,7 +381,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getQuests()
     {
-        return $this->getResourceList(URIUtils::parseUri(self::QUESTS_ROUTE), 'quests', 'Wonnova\SDK\Model\Quest');
+        return $this->getResourceCollection(URIUtils::parseUri(self::QUESTS_ROUTE), 'quests', 'Wonnova\SDK\Model\Quest');
     }
 
     /**
@@ -392,7 +393,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserStatusInQuests($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceList(URIUtils::parseUri(self::USER_QUESTS_STATUS_ROUTE, [
+        return $this->getResourceCollection(URIUtils::parseUri(self::USER_QUESTS_STATUS_ROUTE, [
             'userId' => $userId
         ]), 'quests', 'Wonnova\SDK\Model\Quest');
     }
@@ -402,7 +403,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getLevels()
     {
-        return $this->getResourceList(URIUtils::parseUri(self::LEVELS_ROUTE), 'levels', 'Wonnova\SDK\Model\Level');
+        return $this->getResourceCollection(URIUtils::parseUri(self::LEVELS_ROUTE), 'levels', 'Wonnova\SDK\Model\Level');
     }
 
     /**
@@ -446,10 +447,58 @@ class Client extends GuzzleClient implements ClientInterface
             $routeParams['userId'] = $user instanceof User ? $user->getUserId() : $user;
         }
 
-        return $this->getResourceList(
+        return $this->getResourceCollection(
             URIUtils::parseUri(self::TEAMS_LEADERBOARD_ROUTE, $routeParams),
             'scores',
             'Wonnova\SDK\Model\Team'
         );
+    }
+
+    /**
+     * Returns the top rated items
+     *
+     * @param int $maxCount
+     * @return Collection|Item[]
+     */
+    public function getItemsLeaderboard($maxCount = 6)
+    {
+        return $this->getResourceCollection(URIUtils::parseUri(self::ITEMS_LEADERBOARD_ROUTE, [
+            'maxCount' => $maxCount
+        ]), 'leaderboard', 'Wonnova\SDK\Model\Item');
+    }
+
+    /**
+     * Rates an item increasing its score and setting the rate from certain user.
+     *
+     * @param User|string $user a User model or userId
+     * @param Item|string $item an Item model or itemId
+     * @param int $score
+     * @return Item
+     */
+    public function rateItem($user, $item, $score = 0)
+    {
+        // TODO: Implement rateItem() method.
+    }
+
+    /**
+     * Deletes certain item
+     *
+     * @param Item|string $item an Item model or itemId
+     * @return void
+     */
+    public function deleteItem($item)
+    {
+        // TODO: Implement deleteItem() method.
+    }
+
+    /**
+     * Resets an item's score to zero
+     *
+     * @param Item|string $item an Item model or itemId
+     * @return void
+     */
+    public function resetItemScore($item)
+    {
+        // TODO: Implement resetItemScore() method.
     }
 }
