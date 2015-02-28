@@ -24,6 +24,7 @@ $wonnovaClient = new \Wonnova\SDK\Connection\Client(
 
 // After this point, you are able to perform requests to the API
 try {
+    // Create a new user in your system
     $user = new User();
     $user->setUsername('john.doe')
          ->setProvider('my_company_name')
@@ -34,6 +35,10 @@ try {
     
     // Once the user is created, the userId is populated if it wasn't previously set.
     echo $user->getUserId();
+    
+    // Make the user perform an action
+    $actionCode = 'LOGIN';
+    $wonnovaClient->notifyAction($user, $actionCode);
     
     // You can now get the list of your quests
     // The userId can be used if you don't have access to the full User object
@@ -48,10 +53,10 @@ try {
         
         // Get the quest steps
         foreach ($quest->getQuestSteps() as $step) {
-            echo sprintf('Quest %s. Step type %s', $quest->getName(), $step->getType());
-            echo sprintf('Quest %s. Step code %s', $quest->getName(), $step->getCode());
+            echo sprintf('Quest %s. Step type: %s', $quest->getName(), $step->getType());
+            echo sprintf('Quest %s. Step code: %s', $quest->getName(), $step->getCode());
             echo sprintf(
-                'Does "%s" completed this step? %s',
+                'Did "%s" complete this step? %s',
                 $user->getFullName(),
                 ($step->isCompleted() ? 'YES' : 'NO')
             );
