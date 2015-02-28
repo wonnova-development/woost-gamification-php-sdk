@@ -100,10 +100,44 @@ $response = $wonnovaClient->connect($method, $route);
 $data = json_decode($response->getBody()->getContents(), true);
 ```
 
-### Dependency injection
+### Dependency injection and testing
 
 If you need to depend on Wonnova's Client object, always use the `Wonnova\SDK\Connection\ClientInterface` instead of the concrete `Client` object. This way you will be able to replace the object in case of need.
 
+If you don't want to replace all the methods in the Client object but you need to test another object that depends on it and don't want real HTTP requests to be performed, there is no problem. The object `Wonnova\SDK\Connection\Client` is based and extends `GuzzleHttp\Client`, so you will be able to mock HTTP requests as explained [here](http://guzzle.readthedocs.org/en/latest/testing.html).
+
+An example.
+
+```php
+// Create a client instance
+$wonnovaClient = new \Wonnova\SDK\Connection\Client(
+    new \Wonnova\SDK\Auth\Credentials('AaBbCcDd123456')
+);
+
+// Create a mock subscriber
+$mockSubscriber = new \GuzzleHttp\Subscriber\Mock([
+    // Add a response that will mock the authentication request
+    new \GuzzleHttp\Message\Response(
+        200,
+        [],
+        new \GuzzleHttp\Stream\Stream(fopen('data://text/plain,{"token": "foobar"}', 'r'))
+    ),
+    
+    // Add another response that will mock the request you want to test
+    new \GuzzleHttp\Message\Response(
+        200,
+        [],
+        new \GuzzleHttp\Stream\Stream(fopen('data://text/plain,...', 'r'))
+    ),
+]);
+
+// Set the mock subscriber to the client instance
+$wonnovaClient->getEmitter()->attach($mockSubscriber);
+$wonnovaClient->getUsers(); // This won't perform a real HTTP request
+```
+
+You just need to set a response content that is compatible with what the SDK expectes to get from the request.
+
 ### RESTful API
 
-https://secure.wonnova.com/tutorial
+If you need to know the specifications of the API that is consumed by this SDK, follow this link https://secure.wonnova.com/tutorial
