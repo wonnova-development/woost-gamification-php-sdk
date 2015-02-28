@@ -11,6 +11,13 @@ use Wonnova\SDK\Common\ArraySerializableInterface;
 abstract class AbstractModel implements ArraySerializableInterface, \JsonSerializable
 {
     /**
+     * Used to map virtual to real fields
+     *
+     * @var array
+     */
+    protected $fieldMapping = [];
+
+    /**
      * Populates this object from an array of data
      *
      * @param array $data
@@ -18,6 +25,11 @@ abstract class AbstractModel implements ArraySerializableInterface, \JsonSeriali
     public function fromArray(array $data)
     {
         foreach ($data as $property => $value) {
+            // Rename field if map is defined
+            if (isset($this->fieldMapping[$property])) {
+                $property = $this->fieldMapping[$property];
+            }
+
             $setter = 'set' . ucfirst($property);
             if (method_exists($this, $setter)) {
                 $this->{$setter}($value);

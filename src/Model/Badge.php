@@ -7,8 +7,6 @@ use JMS\Serializer\Annotation as JMS;
  * Class Badge
  * @author Wonnova
  * @link http://www.wonnova.com
- *
- * @JMS\AccessType("public_method")
  */
 class Badge extends AbstractModel
 {

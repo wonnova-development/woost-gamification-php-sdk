@@ -7,11 +7,18 @@ use JMS\Serializer\Annotation as JMS;
  * Class Level
  * @author Wonnova
  * @link http://www.wonnova.com
- *
- * @JMS\AccessType("public_method")
  */
 class Level extends AbstractModel
 {
+    /**
+     * Used to map virtual to real fields
+     *
+     * @var array
+     */
+    protected $fieldMapping = [
+        'dynamic' => 'scenario'
+    ];
+
     /**
      * @var int
      * @JMS\Type("integer")

@@ -7,11 +7,19 @@ use JMS\Serializer\Annotation as JMS;
  * Class Item
  * @author Wonnova
  * @link http://www.wonnova.com
- *
- * @JMS\AccessType("public_method")
  */
 class Item extends AbstractModel
 {
+    /**
+     * Used to map virtual to real fields
+     *
+     * @var array
+     * @JMS\Exclude()
+     */
+    protected $fieldMapping = [
+        'id' => 'itemId'
+    ];
+
     /**
      * @var string
      * @JMS\Type("string")
