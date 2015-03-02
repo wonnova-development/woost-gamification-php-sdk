@@ -5,7 +5,6 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use GuzzleHttp\Exception\ServerException;
 use JMS\Serializer\Serializer;
 use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\Token;
@@ -18,6 +17,7 @@ use Wonnova\SDK\Exception\InvalidRequestException;
 use Wonnova\SDK\Exception\NotFoundException;
 use Wonnova\SDK\Exception\RuntimeException;
 use Wonnova\SDK\Exception\UnauthorizedException;
+use Wonnova\SDK\Exception\ServerException;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Item;
@@ -28,7 +28,6 @@ use Wonnova\SDK\Model\QuestStep;
 use Wonnova\SDK\Model\Team;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
 use Wonnova\SDK\Serializer\SerializerFactory;
 
 /**
@@ -80,7 +79,8 @@ class Client extends GuzzleClient implements ClientInterface
             'defaults' => [
                 'headers' => [
                     'User-Agent' => self::USER_AGENT
-                ]
+                ],
+                'exceptions' => false
             ]
         ]);
 
@@ -111,75 +111,70 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function connect($method, $route, array $options = [])
     {
-        try {
-            // Perform authentication if token has not been set yet
-            if (! isset($this->token)) {
-                $this->authenticate();
-            }
+        // Perform authentication if token has not been set yet
+        if (! isset($this->token)) {
+            $this->authenticate();
+        }
 
-            // Add the language and token headers
-            $options = $this->processOptionsWithDefaults($options);
+        // Add the language and token headers
+        $options = $this->processOptionsWithDefaults($options);
+        $response = $this->send($this->createRequest($method, $route, $options));
+        $code = $response->getStatusCode();
+        if ($code === 200) {
+            return $response;
+        }
 
-            return $this->send($this->createRequest($method, $route, $options));
-        } catch (ClientException $e) {
-            $code = $e->getCode();
+        // In case of error throw proper exception
+        switch ($code) {
+            case 401: // Token not valid. Reconect
+                $message = json_decode($response->getBody()->getContents(), true);
 
-            switch ($code) {
-                case 401: // Token not valid. Reconect
-                    $message = json_decode($e->getResponse()->getBody()->getContents(), true);
+                // If the server returned an INVALID_TOKEN response, reconnect
+                if ($message['error'] === ResponseCodes::INVALID_TOKEN) {
+                    $this->resetToken();
+                    return $this->connect($method, $route, $options);
+                    break;
+                }
 
-                    // If the server returned an INVALID_TOKEN response, reconnect
-                    if ($message['error'] === ResponseCodes::INVALID_TOKEN) {
-                        $this->resetToken();
-                        return $this->connect($method, $route, $options);
-                        break;
-                    }
-
-                    throw new UnauthorizedException(
-                        sprintf(
-                            'Unauthorized request to "%s" with method "%s" and response message "%s"',
-                            $route,
-                            $method,
-                            isset($message['message']) ? $message['message'] : ''
-                        ),
-                        $code,
-                        $e
-                    );
-                case 400:
-                    $message = json_decode($e->getResponse()->getBody()->getContents(), true);
-                    throw new InvalidRequestException(
-                        sprintf(
-                            'Invalid request to "%s" with method "%s" and response message "%s"',
-                            $route,
-                            $method,
-                            $message['message']
-                        ),
-                        $code,
-                        $e
-                    );
-                case 404:
-                    throw new NotFoundException(
-                        sprintf('Route "%s" with method "%s" was not found', $route, $method),
-                        $code,
-                        $e
-                    );
-                default:
-                    throw new RuntimeException(
-                        sprintf(
-                            'Unexpected error occurred whith request to route "%s" with method "%s"',
-                            $route,
-                            $method
-                        ),
-                        $code,
-                        $e
-                    );
-            }
-        } catch (ServerException $e) {
-            throw new \Wonnova\SDK\Exception\ServerException(
-                sprintf('There was a server error processing a request to "%s" with method "%s"', $route, $method),
-                $e->getCode(),
-                $e
-            );
+                throw new UnauthorizedException(
+                    sprintf(
+                        'Unauthorized request to "%s" with method "%s" and response message "%s"',
+                        $route,
+                        $method,
+                        isset($message['message']) ? $message['message'] : ''
+                    ),
+                    $code
+                );
+            case 400:
+                $message = json_decode($response->getBody()->getContents(), true);
+                throw new InvalidRequestException(
+                    sprintf(
+                        'Invalid request to "%s" with method "%s" and response message "%s"',
+                        $route,
+                        $method,
+                        $message['message']
+                    ),
+                    $code
+                );
+            case 404:
+                throw new NotFoundException(
+                    sprintf('Route "%s" with method "%s" was not found', $route, $method),
+                    $code
+                );
+            case 500:
+                throw new ServerException(
+                    sprintf('There was a server error processing a request to "%s" with method "%s"', $route, $method),
+                    $code
+                );
+            default:
+                throw new RuntimeException(
+                    sprintf(
+                        'Unexpected error occurred whith request to route "%s" with method "%s"',
+                        $route,
+                        $method
+                    ),
+                    $code
+                );
         }
     }
 
