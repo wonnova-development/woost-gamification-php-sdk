@@ -11,6 +11,7 @@ use Wonnova\SDK\Auth\CredentialsInterface;
 use Wonnova\SDK\Auth\Token;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\Headers;
+use Wonnova\SDK\Common\ResponseCodes;
 use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Exception\InvalidArgumentException;
 use Wonnova\SDK\Exception\InvalidRequestException;
@@ -128,7 +129,7 @@ class Client extends GuzzleClient implements ClientInterface
                     $message = json_decode($e->getResponse()->getBody()->getContents(), true);
 
                     // If the server returned an INVALID_TOKEN response, reconnect
-                    if ($message['error'] === 'INVALID_TOKEN') {
+                    if ($message['error'] === ResponseCodes::INVALID_TOKEN) {
                         $this->resetToken();
                         return $this->connect($method, $route, $options);
                         break;
