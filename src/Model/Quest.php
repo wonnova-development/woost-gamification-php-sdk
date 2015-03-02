@@ -13,11 +13,6 @@ use JMS\Serializer\Annotation as JMS;
 class Quest extends AbstractModel
 {
     /**
-     * @var int
-     * @JMS\Type("integer")
-     */
-    private $id;
-    /**
      * @var \DateTime
      * @JMS\Type("StringDateTime")
      */
@@ -53,24 +48,6 @@ class Quest extends AbstractModel
      * @JMS\Type("array<Wonnova\SDK\Model\QuestStep>")
      */
     private $questSteps;
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
 
     /**
      * @return \DateTime

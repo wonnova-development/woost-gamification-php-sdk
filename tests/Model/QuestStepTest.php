@@ -16,14 +16,6 @@ class QuestStepTest extends TestCase
         $this->questStep = new QuestStep();
     }
 
-    public function testId()
-    {
-        $expected = 85;
-        $this->assertNull($this->questStep->getId());
-        $this->assertSame($this->questStep, $this->questStep->setId($expected));
-        $this->assertEquals($expected, $this->questStep->getId());
-    }
-
     public function testType()
     {
         $expected = QuestStep::TYPE_BADGE;

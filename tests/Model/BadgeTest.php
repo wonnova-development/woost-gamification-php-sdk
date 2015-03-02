@@ -16,14 +16,6 @@ class BadgeTest extends TestCase
         $this->badge = new Badge();
     }
 
-    public function testId()
-    {
-        $expected = 34;
-        $this->assertNull($this->badge->getId());
-        $this->assertSame($this->badge, $this->badge->setId($expected));
-        $this->assertEquals($expected, $this->badge->getId());
-    }
-
     public function testName()
     {
         $expected = 'The Badge';

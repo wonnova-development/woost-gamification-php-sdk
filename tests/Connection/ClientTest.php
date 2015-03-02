@@ -145,7 +145,6 @@ class ClientTest extends TestCase
         $badges = $this->client->getUserBadges('');
         $this->assertCount(2, $badges);
         foreach ($badges as $key => $badge) {
-            $this->assertEquals($badgesData[$key]['id'], $badge->getId());
             $this->assertEquals($badgesData[$key]['type'], $badge->getType());
             $this->assertInstanceOf('DateTime', $badge->getNotificationDate());
             $this->assertEquals($badgesData[$key]['imageUrl'], $badge->getImageUrl());
@@ -182,7 +181,6 @@ class ClientTest extends TestCase
         $questSteps = $this->client->getUserProgressInQuest('', '');
         $this->assertCount(4, $questSteps);
         foreach ($questSteps as $key => $questStep) {
-            $this->assertEquals($progressData[$key]['id'], $questStep->getId());
             $this->assertEquals($progressData[$key]['type'], $questStep->getType());
             $this->assertEquals($progressData[$key]['code'], $questStep->getCode());
             $this->assertEquals($progressData[$key]['name'], $questStep->getName());
@@ -202,7 +200,6 @@ class ClientTest extends TestCase
         $quests = $this->client->getQuests();
         $this->assertCount(3, $quests);
         foreach ($quests as $key => $quest) {
-            $this->assertEquals($questsData[$key]['id'], $quest->getId());
             $this->assertInstanceof('DateTime', $quest->getStartDate());
             $this->assertEquals($questsData[$key]['code'], $quest->getCode());
             $this->assertEquals($questsData[$key]['generatesNotification'], $quest->getGeneratesNotification());
@@ -222,7 +219,6 @@ class ClientTest extends TestCase
         $levels = $this->client->getLevels();
         $this->assertCount(2, $levels);
         foreach ($levels as $key => $level) {
-            $this->assertEquals($levelsData[$key]['id'], $level->getId());
             $this->assertEquals($levelsData[$key]['code'], $level->getCode());
             $this->assertEquals($levelsData[$key]['name'], $level->getName());
             $this->assertEquals($levelsData[$key]['score'], $level->getScore());
@@ -246,7 +242,6 @@ class ClientTest extends TestCase
         $this->subscriber->addResponse(new Response(200, [], $body));
 
         $level = $this->client->getUserLevelInScenario('', '');
-        $this->assertEquals(33, $level->getId());
         $this->assertEquals('LEARNER', $level->getCode());
         $this->assertEquals(true, $level->getGeneratesNotification());
         $this->assertEquals('default.png', $level->getImageUrl());

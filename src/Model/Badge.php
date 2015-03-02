@@ -16,11 +16,6 @@ class Badge extends AbstractModel
     const TYPE_COMBO = 'combo';
 
     /**
-     * @var int
-     * @JMS\Type("integer")
-     */
-    private $id;
-    /**
      * @var string
      * @JMS\Type("string")
      */
@@ -45,24 +40,6 @@ class Badge extends AbstractModel
      * @JMS\Type("StringDateTime")
      */
     private $notificationDate;
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
 
     /**
      * @return string
