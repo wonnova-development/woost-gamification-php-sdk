@@ -151,7 +151,7 @@ class Item extends AbstractModel
     }
 
     /**
-     * @param \DateTime $dateCreated
+     * @param \DateTime|string $dateCreated
      * @return $this
      */
     public function setDateCreated($dateCreated)
