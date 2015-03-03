@@ -58,12 +58,12 @@ class Quest extends AbstractModel
     }
 
     /**
-     * @param \DateTime $startDate
+     * @param \DateTime|string $startDate
      * @return $this
      */
     public function setStartDate($startDate)
     {
-        $this->startDate = $startDate;
+        $this->startDate = is_string($startDate) ? new \DateTime($startDate) : $startDate;
         return $this;
     }
 
@@ -171,7 +171,7 @@ class Quest extends AbstractModel
      */
     public function setQuestSteps($questSteps)
     {
-        $this->questSteps = $questSteps;
+        $this->questSteps = is_array($questSteps) ? new ArrayCollection($questSteps) : $questSteps;
         return $this;
     }
 

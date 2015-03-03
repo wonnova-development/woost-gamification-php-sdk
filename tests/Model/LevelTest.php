@@ -87,7 +87,7 @@ class LevelTest extends TestCase
         $expected = new Badge();
         $this->assertNull($this->level->getBadge());
         $this->assertSame($this->level, $this->level->setBadge($expected));
-        $this->assertEquals($expected, $this->level->getBadge());
+        $this->assertSame($expected, $this->level->getBadge());
     }
 
     public function testScenario()
@@ -95,6 +95,6 @@ class LevelTest extends TestCase
         $expected = new Scenario();
         $this->assertNull($this->level->getScenario());
         $this->assertSame($this->level, $this->level->setScenario($expected));
-        $this->assertEquals($expected, $this->level->getScenario());
+        $this->assertSame($expected, $this->level->getScenario());
     }
 }
