@@ -116,7 +116,7 @@ class Team extends AbstractModel
     /**
      * @return boolean
      */
-    public function isItsMe()
+    public function getItsMe()
     {
         return $this->itsMe;
     }
