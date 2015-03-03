@@ -35,17 +35,10 @@ class DateTimeHandler implements SubscribingHandlerInterface
             'type' => 'WonnovaDateTime',
             'method' => 'deserializeWonnovaDateTime',
         ];
-        $stringDateTimeDeserializationStrategyConfig = [
-            'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
-            'type' => 'StringDateTime',
-            'method' => 'deserializeStringDateTime',
-        ];
 
         return [
             static::getArrayWithFormat($wonnovaDateTimeDeserializationStrategyConfig),
             static::getArrayWithFormat($wonnovaDateTimeDeserializationStrategyConfig, 'array'),
-            static::getArrayWithFormat($stringDateTimeDeserializationStrategyConfig),
-            static::getArrayWithFormat($stringDateTimeDeserializationStrategyConfig, 'array')
         ];
     }
 
@@ -69,17 +62,10 @@ class DateTimeHandler implements SubscribingHandlerInterface
             return $dateTime;
         } elseif (is_string($data)) {
             return new \DateTime($data);
+        } elseif ($data instanceof \DateTime) {
+            return $data;
         }
 
         return null;
-    }
-
-    public function deserializeStringDateTime(
-        $visitor,
-        $data,
-        array $type,
-        Context $context
-    ) {
-        return new \DateTime($data);
     }
 }

@@ -51,7 +51,7 @@ class Level extends AbstractModel
     private $imageUrl;
     /**
      * @var \DateTime
-     * @JMS\Type("StringDateTime")
+     * @JMS\Type("WonnovaDateTime")
      */
     private $dateCreated;
     /**

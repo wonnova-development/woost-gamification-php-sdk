@@ -48,7 +48,7 @@ class Item extends AbstractModel
     private $score;
     /**
      * @var \DateTime
-     * @JMS\Type("StringDateTime")
+     * @JMS\Type("WonnovaDateTime")
      */
     private $dateCreated;
 

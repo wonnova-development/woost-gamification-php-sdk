@@ -14,7 +14,7 @@ class Quest extends AbstractModel
 {
     /**
      * @var \DateTime
-     * @JMS\Type("StringDateTime")
+     * @JMS\Type("WonnovaDateTime")
      */
     private $startDate;
     /**

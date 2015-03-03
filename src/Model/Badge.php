@@ -37,7 +37,7 @@ class Badge extends AbstractModel
     private $type;
     /**
      * @var \DateTime
-     * @JMS\Type("StringDateTime")
+     * @JMS\Type("WonnovaDateTime")
      */
     private $notificationDate;
 
