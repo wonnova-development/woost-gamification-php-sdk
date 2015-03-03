@@ -73,6 +73,12 @@ class UserTest extends TestCase
         $this->assertInstanceOf('DateTime', $this->user->getDateOfBirth());
     }
 
+    public function testInvalidDateOfBirthSetsItToNull()
+    {
+        $this->user->setDateOfBirth(new \stdClass());
+        $this->assertNull($this->user->getDateOfBirth());
+    }
+
     public function testEmail()
     {
         $expected = 'foo@bar.com';
