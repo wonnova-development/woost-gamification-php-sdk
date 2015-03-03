@@ -183,12 +183,12 @@ class Level extends AbstractModel
     }
 
     /**
-     * @param \DateTime $dateCreated
+     * @param \DateTime|string $dateCreated
      * @return $this
      */
     public function setDateCreated($dateCreated)
     {
-        $this->dateCreated = $dateCreated;
+        $this->dateCreated = is_string($dateCreated) ? new \DateTime($dateCreated) : $dateCreated;
         return $this;
     }
 
