@@ -71,4 +71,21 @@ class ItemTest extends TestCase
         $this->item->setDateCreated('2010-01-01 00:00:00');
         $this->assertInstanceOf('DateTime', $this->item->getDateCreated());
     }
+
+    public function testToArray()
+    {
+        $data = [
+            'id' => 'item123',
+            'title' => 'The Item',
+            'description' => 'The Item\'s description',
+            'author' => 'john.doe',
+            'dateCreated' => '2010-01-01 00:00:00'
+        ];
+        $this->item->fromArray($data);
+        $itemArray = $this->item->toArray();
+
+        $this->assertCount(4, $itemArray);
+        unset($data['dateCreated']);
+        $this->assertEquals($data, $itemArray);
+    }
 }
