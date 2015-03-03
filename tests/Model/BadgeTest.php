@@ -55,4 +55,9 @@ class BadgeTest extends TestCase
         $this->assertSame($this->badge, $this->badge->setNotificationDate($expected));
         $this->assertSame($expected, $this->badge->getNotificationDate());
     }
+
+    public function testToArray()
+    {
+        $this->assertCount(0, $this->badge->toArray());
+    }
 }
