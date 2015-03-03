@@ -4,6 +4,7 @@ namespace Wonnova\SDK\Serializer;
 use JMS\Serializer\Context;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
+use Wonnova\SDK\Common\WonnovaDateTimeParserTrait;
 
 /**
  * This fixes inconsistences in date fields returned from the API, so that all of them are cast into DateTime objects
@@ -12,6 +13,8 @@ use JMS\Serializer\Handler\SubscribingHandlerInterface;
  */
 class DateTimeHandler implements SubscribingHandlerInterface
 {
+    use WonnovaDateTimeParserTrait;
+
     /**
      * Return format:
      *
@@ -54,18 +57,6 @@ class DateTimeHandler implements SubscribingHandlerInterface
         array $type,
         Context $context
     ) {
-        if (is_array($data)) {
-            $formatedDate = isset($data['date']) ? $data['date'] : 'now';
-            $timezone = isset($data['timezone']) ? new \DateTimeZone($data['timezone']) : null;
-            $dateTime = new \DateTime($formatedDate, $timezone);
-
-            return $dateTime;
-        } elseif (is_string($data)) {
-            return new \DateTime($data);
-        } elseif ($data instanceof \DateTime) {
-            return $data;
-        }
-
-        return null;
+        return $this->parseWonnovaDateTime($data);
     }
 }

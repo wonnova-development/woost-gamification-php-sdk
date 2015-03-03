@@ -2,6 +2,7 @@
 namespace Wonnova\SDK\Model;
 
 use JMS\Serializer\Annotation as JMS;
+use Wonnova\SDK\Common\WonnovaDateTimeParserTrait;
 
 /**
  * Class Badge
@@ -14,6 +15,8 @@ class Badge extends AbstractModel
     const TYPE_REPETITION       = 'repetition';
     const TYPE_CONSECUTIVE_DAYS = 'consecutive_days';
     const TYPE_COMBO            = 'combo';
+
+    use WonnovaDateTimeParserTrait;
 
     /**
      * @var string
@@ -122,12 +125,12 @@ class Badge extends AbstractModel
     }
 
     /**
-     * @param \DateTime $notificationDate
+     * @param \DateTime|string $notificationDate
      * @return $this
      */
     public function setNotificationDate($notificationDate)
     {
-        $this->notificationDate = $notificationDate;
+        $this->notificationDate = $this->parseWonnovaDateTime($notificationDate);
         return $this;
     }
 }

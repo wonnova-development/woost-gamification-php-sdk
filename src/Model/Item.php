@@ -2,6 +2,7 @@
 namespace Wonnova\SDK\Model;
 
 use JMS\Serializer\Annotation as JMS;
+use Wonnova\SDK\Common\WonnovaDateTimeParserTrait;
 
 /**
  * Class Item
@@ -10,6 +11,8 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Item extends AbstractModel
 {
+    use WonnovaDateTimeParserTrait;
+
     /**
      * Used to map virtual to real fields
      *
@@ -156,7 +159,7 @@ class Item extends AbstractModel
      */
     public function setDateCreated($dateCreated)
     {
-        $this->dateCreated = is_string($dateCreated) ? new \DateTime($dateCreated) : $dateCreated;
+        $this->dateCreated = $this->parseWonnovaDateTime($dateCreated);
         return $this;
     }
 

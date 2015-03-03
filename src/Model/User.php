@@ -2,6 +2,7 @@
 namespace Wonnova\SDK\Model;
 
 use JMS\Serializer\Annotation as JMS;
+use Wonnova\SDK\Common\WonnovaDateTimeParserTrait;
 
 /**
  * Class User
@@ -10,6 +11,8 @@ use JMS\Serializer\Annotation as JMS;
  */
 class User extends AbstractModel
 {
+    use WonnovaDateTimeParserTrait;
+
     /**
      * Used to map virtual to real fields
      *
@@ -206,15 +209,7 @@ class User extends AbstractModel
      */
     public function setDateOfBirth($dateOfBirth)
     {
-        if (is_array($dateOfBirth) && isset($dateOfBirth['date'])) {
-            $timezone = isset($dateOfBirth['timezone']) ? new \DateTimeZone($dateOfBirth['timezone']) : null;
-            $this->dateOfBirth = new \DateTime($dateOfBirth['date'], $timezone);
-        } elseif (is_string($dateOfBirth)) {
-            $this->dateOfBirth = new \DateTime($dateOfBirth);
-        } else {
-            $this->dateOfBirth = $dateOfBirth;
-        }
-
+        $this->dateOfBirth = $this->parseWonnovaDateTime($dateOfBirth);
         return $this;
     }
 

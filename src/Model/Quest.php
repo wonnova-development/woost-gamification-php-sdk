@@ -4,6 +4,7 @@ namespace Wonnova\SDK\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use JMS\Serializer\Annotation as JMS;
+use Wonnova\SDK\Common\WonnovaDateTimeParserTrait;
 
 /**
  * Class Quest
@@ -12,6 +13,8 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Quest extends AbstractModel
 {
+    use WonnovaDateTimeParserTrait;
+
     /**
      * @var \DateTime
      * @JMS\Type("WonnovaDateTime")
@@ -63,7 +66,7 @@ class Quest extends AbstractModel
      */
     public function setStartDate($startDate)
     {
-        $this->startDate = is_string($startDate) ? new \DateTime($startDate) : $startDate;
+        $this->startDate = $this->parseWonnovaDateTime($startDate);
         return $this;
     }
 
