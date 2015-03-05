@@ -353,4 +353,31 @@ class ClientTest extends TestCase
         $this->assertEquals(0, $data['score']);
         $this->assertEquals('ok', $data['message']);
     }
+
+    public function testGetUserStatusInQuest()
+    {
+        $questsData = json_decode(
+            file_get_contents(__DIR__ . '/../dummy_response_data/getUserStatusInQuest.json'),
+            true
+        );
+        $questsData = $questsData['quests'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserStatusInQuest.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $quests = $this->client->getUserStatusInQuests('');
+        $this->assertCount(5, $quests);
+        foreach ($quests as $key => $quest) {
+            $this->assertEquals($questsData[$key]['name'], $quest->getName());
+            $this->assertEquals($questsData[$key]['code'], $quest->getCode());
+            $this->assertEquals($questsData[$key]['progress'], $quest->getProgress());
+            $this->assertCount(count($questsData[$key]['questSteps']), $quest->getQuestSteps());
+
+            foreach ($quest->getQuestSteps() as $stepKey => $step) {
+                $this->assertEquals($questsData[$key]['questSteps'][$stepKey]['type'], $step->getType());
+                $this->assertEquals($questsData[$key]['questSteps'][$stepKey]['code'], $step->getCode());
+                $this->assertEquals($questsData[$key]['questSteps'][$stepKey]['completed'], $step->isCompleted());
+            }
+        }
+    }
 }
