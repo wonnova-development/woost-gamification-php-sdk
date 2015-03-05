@@ -10,6 +10,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Wonnova\SDK\Auth\Credentials;
 use Wonnova\SDK\Connection\Client;
 use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\User;
 
 class ClientTest extends TestCase
@@ -400,5 +401,67 @@ class ClientTest extends TestCase
                 $this->assertEquals($questsData[$key]['questSteps'][$stepKey]['completed'], $step->isCompleted());
             }
         }
+    }
+
+    public function testNotifyAction()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifyAction('12345', 'LOGIN');
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actionCode' => 'LOGIN'
+        ], $request);
+    }
+
+    public function testNotifyActionWIthItem()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifyAction('12345', 'LOGIN', 'the-item');
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actionCode' => 'LOGIN',
+            'item' => [
+                'id' => 'the-item'
+            ]
+        ], $request);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $item = new Item();
+        $item->setItemId('the-item')
+             ->setAuthor('the-author');
+        $this->client->notifyAction('12345', 'LOGIN', $item);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actionCode' => 'LOGIN',
+            'item' => $item->toArray()
+        ], $request);
+    }
+
+    public function testNotifyActionWithCategories()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifyAction('12345', 'LOGIN', null, ['foo', 'bar']);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actionCode' => 'LOGIN',
+            'categories' => ['foo', 'bar']
+        ], $request);
     }
 }
