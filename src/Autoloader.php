@@ -1,5 +1,5 @@
 <?php
-namespace Wonnova\SDK\Common;
+namespace Wonnova\SDK;
 
 /**
  * Class Autoloader
@@ -8,8 +8,6 @@ namespace Wonnova\SDK\Common;
  */
 class Autoloader
 {
-    const PREFIX = 'Wonnova\SDK';
-
     /**
      * Registers a new autoloader which is compatible with this component
      */
@@ -30,8 +28,8 @@ class Autoloader
         $base_dir = __DIR__ . '/../';
 
         // does the class use the namespace prefix?
-        $len = strlen(self::PREFIX);
-        if (strncmp(self::PREFIX, $class, $len) !== 0) {
+        $len = strlen(__NAMESPACE__);
+        if (strncmp(__NAMESPACE__, $class, $len) !== 0) {
             // no, move to the next registered autoloader
             return;
         }
