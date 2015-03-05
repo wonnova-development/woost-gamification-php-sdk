@@ -88,7 +88,15 @@ $wonnovaClient = new \Wonnova\SDK\Connection\Client(
 
 ### Error management
 
-...
+Each method in the `Client` object will perform at least one HTTP request (even more if a reauthentication has to be performed). If the server returns a response with 200 status code, the response content will be parsed, but 4xx and 5xx status codes could throw an exception.
+
+* **401**: This could be returned when the authentication token is invalid. In that case the client will automatically reauthenticate. If the server returns this status but it is not an INVALID_TOKEN response, then a `Wonnova\SDK\Exception\UnauthorizedException` will be thrown.
+* **400**: This status is returned when an invalid request is performed for some reason, like invalid arguments and such. This case will throw a `Wonnova\SDK\Exception\InvalidRequestException`.
+* **404**: If for some reason the requested URL does not exist and a 404 error is returned, a `Wonnova\SDK\Exception\NotFoundException` will be thrown. In a normal situation this shouldn't happen unless you manually perform a request to a custom route.
+* **500**: Of course, if there is a server error, a `Wonnova\SDK\Exception\ServerException` will be thrown.
+* **Others**: Other status codes shouldn't be returned, but in case something went wrong, a `Wonnova\SDK\Exception\RuntimeException` will be thrown.
+
+All the 4xx exceptions extend from a common `Wonnova\SDK\Exception\ClientException`, and all the exceptions in this package implement the common `Wonnova\SDK\Exception\ExceptionInterface` to ease catching them.
 
 ### Future compatibility
 
@@ -103,6 +111,14 @@ $route = '/foo/bar/' . $userId;
 // This response object is a GuzzleHttp\Message\ResponseInterface instance
 $response = $wonnovaClient->connect($method, $route);
 $data = json_decode($response->getBody()->getContents(), true);
+
+// To send information in the body, like in POST and PUT requests, use the third argument like this
+$response = $wonnovaClient->connect('POST', '/resource/create', [
+    'json' => [
+        'resourceId' => '123',
+        'foo' => 'bar'
+    ]
+]);
 ```
 
 ### Dependency injection and testing
