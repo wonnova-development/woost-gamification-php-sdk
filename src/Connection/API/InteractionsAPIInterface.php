@@ -11,8 +11,8 @@ use Wonnova\SDK\Model\User;
  */
 interface InteractionsAPIInterface
 {
-    const INTERACTION_NOTIFICATION_ROUTE    = '/interactions/notification';
-    const INTERACTION_STATUS_ROUTE          = '/interactions/status';
+    const INTERACTION_NOTIFICATION_ROUTE    = '/rest/interactions/notification';
+    const INTERACTION_STATUS_ROUTE          = '/rest/interactions/status';
 
     /**
      * Performs an interaction notification between two users

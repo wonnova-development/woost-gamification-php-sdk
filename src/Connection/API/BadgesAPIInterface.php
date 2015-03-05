@@ -8,5 +8,5 @@ namespace Wonnova\SDK\Connection\API;
  */
 interface BadgesAPIInterface
 {
-    const BADGE_IMAGE_ROUTE = '/badges/%badgeId%/image';
+    const BADGE_IMAGE_ROUTE = '/rest/badges/%badgeId%/image';
 }

@@ -12,10 +12,10 @@ use Wonnova\SDK\Model\User;
  */
 interface ItemsAPIInterface
 {
-    const ITEMS_LEADERBOARD_ROUTE   = '/items/leaderboard';
-    const ITEM_RATE_ROUTE           = '/items/rate';
-    const ITEM_ROUTE                = '/items/%itemId%';
-    const ITEM_RESET_SCORE_ROUTE    = '/items/%itemId%/reset-score';
+    const ITEMS_LEADERBOARD_ROUTE   = '/rest/items/leaderboard';
+    const ITEM_RATE_ROUTE           = '/rest/items/rate';
+    const ITEM_ROUTE                = '/rest/items/%itemId%';
+    const ITEM_RESET_SCORE_ROUTE    = '/rest/items/%itemId%/reset-score';
 
     /**
      * Returns the top rated items

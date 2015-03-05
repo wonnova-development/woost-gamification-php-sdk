@@ -16,15 +16,15 @@ use Wonnova\SDK\Model\User;
  */
 interface UsersAPIInterface
 {
-    const USERS_ROUTE                   = '/users';
-    const UPDATE_USER_ROUTE             = '/users/%userId%';
-    const USER_NOTIFICATIONS_ROUTE      = '/users/%userId%/notifications';
-    const USER_BADGES_ROUTE             = '/users/%userId%/badges';
-    const USER_ACHIEVEMENTS_ROUTE       = '/users/%userId%/achievements';
-    const USER_QUEST_PROGRESS_ROUTE     = '/users/%userId%/quests/%questCode%/progress';
-    const USER_QUESTS_STATUS_ROUTE      = '/users/%userId%/quests/status';
-    const USER_ABOUT_ROUTE              = '/users/%userId%/about';
-    const USER_ACTION_OCCURRENCES_ROUTE = '/users/%userId%/actions/%actionCode%/occurrences';
+    const USERS_ROUTE                   = '/rest/users';
+    const UPDATE_USER_ROUTE             = '/rest/users/%userId%';
+    const USER_NOTIFICATIONS_ROUTE      = '/rest/users/%userId%/notifications';
+    const USER_BADGES_ROUTE             = '/rest/users/%userId%/badges';
+    const USER_ACHIEVEMENTS_ROUTE       = '/rest/users/%userId%/achievements';
+    const USER_QUEST_PROGRESS_ROUTE     = '/rest/users/%userId%/quests/%questCode%/progress';
+    const USER_QUESTS_STATUS_ROUTE      = '/rest/users/%userId%/quests/status';
+    const USER_ABOUT_ROUTE              = '/rest/users/%userId%/about';
+    const USER_ACTION_OCCURRENCES_ROUTE = '/rest/users/%userId%/actions/%actionCode%/occurrences';
 
     /**
      * Returns users list

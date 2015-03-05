@@ -37,10 +37,6 @@ use Wonnova\SDK\Serializer\SerializerFactory;
  */
 class Client extends GuzzleClient implements ClientInterface
 {
-    const AUTH_ROUTE = '/rest/auth';
-
-    const HOST = 'https://secure.wonnova.com';
-
     const USER_AGENT    = 'wonnova-php-sdk';
     const TOKEN_KEY     = 'wonnova_auth_token';
 
@@ -114,7 +110,6 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function connect($method, $route, array $options = [])
     {
-        $route = sprintf('/rest%s', $route);
         // Perform authentication if token has not been set yet
         if (! isset($this->token)) {
             $this->authenticate();

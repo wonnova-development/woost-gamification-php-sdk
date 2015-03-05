@@ -26,6 +26,9 @@ interface ClientInterface extends
     TeamsAPIInterface,
     BadgesAPIInterface
 {
+    const HOST          = 'https://secure.wonnova.com';
+    const AUTH_ROUTE    = '/rest/auth';
+
     /**
      * Performs a connection to defined endpoint with defined options
      *

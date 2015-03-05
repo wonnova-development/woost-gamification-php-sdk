@@ -11,7 +11,7 @@ use Wonnova\SDK\Model\User;
  */
 interface ActionsAPIInterface
 {
-    const ACTION_NOTIFICATION_ROUTE = '/actions/notification';
+    const ACTION_NOTIFICATION_ROUTE = '/rest/actions/notification';
 
     /**
      * Performs an action notification from certain user

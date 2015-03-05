@@ -11,7 +11,7 @@ use Wonnova\SDK\Model\Quest;
  */
 interface QuestsAPIInterface
 {
-    const QUESTS_ROUTE = '/quests';
+    const QUESTS_ROUTE = '/rest/quests';
 
     /**
      * Returns the list of created quests
