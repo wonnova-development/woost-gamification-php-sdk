@@ -560,4 +560,54 @@ class ClientTest extends TestCase
         $this->client->getUser('');
         $this->assertCount(4, $history);
     }
+
+    /**
+     * @expectedException \Wonnova\SDK\Exception\UnauthorizedException
+     */
+    public function test401ThrowsUnauthorizedException()
+    {
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(401, [], $body));
+        $this->client->getUsers();
+    }
+
+    /**
+     * @expectedException \Wonnova\SDK\Exception\InvalidRequestException
+     */
+    public function test400ThrowsInvalidRequestException()
+    {
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(400, [], $body));
+        $this->client->getUsers();
+    }
+
+    /**
+     * @expectedException \Wonnova\SDK\Exception\NotFoundException
+     */
+    public function test404ThrowsNotFoundException()
+    {
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(404, [], $body));
+        $this->client->getUsers();
+    }
+
+    /**
+     * @expectedException \Wonnova\SDK\Exception\ServerException
+     */
+    public function test500ThrowsServerException()
+    {
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(500, [], $body));
+        $this->client->getUsers();
+    }
+
+    /**
+     * @expectedException \Wonnova\SDK\Exception\RuntimeException
+     */
+    public function testUnsupportedStatusThrowsRuntimeException()
+    {
+        $body = new Stream(fopen('data://text/plain,[]', 'r'));
+        $this->subscriber->addResponse(new Response(403, [], $body));
+        $this->client->getUsers();
+    }
 }

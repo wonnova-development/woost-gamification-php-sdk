@@ -156,7 +156,7 @@ class Client extends GuzzleClient implements ClientInterface
                         'Invalid request to "%s" with method "%s" and response message "%s"',
                         $route,
                         $method,
-                        $message['message']
+                        isset($message['message']) ? $message['message'] : ''
                     ),
                     $code
                 );
