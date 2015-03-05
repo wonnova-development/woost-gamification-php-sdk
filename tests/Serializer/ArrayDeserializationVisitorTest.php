@@ -40,6 +40,14 @@ class ArrayDeserializationVisitorTest extends TestCase
         $this->assertEquals($expected, $this->visitor->prepare($expected));
     }
 
+    public function testDecodeEmptyValue()
+    {
+        $expected = [];
+        $this->assertEquals($expected, $this->visitor->prepare(null));
+        $this->assertEquals($expected, $this->visitor->prepare([]));
+        $this->assertEquals($expected, $this->visitor->prepare(''));
+    }
+
     /**
      * @expectedException \JMS\Serializer\Exception\RuntimeException
      */
