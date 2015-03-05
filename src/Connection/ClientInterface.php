@@ -9,6 +9,7 @@ use Wonnova\SDK\Connection\API\LevelsAPIInterface;
 use Wonnova\SDK\Connection\API\QuestsAPIInterface;
 use Wonnova\SDK\Connection\API\TeamsAPIInterface;
 use Wonnova\SDK\Connection\API\UsersAPIInterface;
+use Wonnova\SDK\Http\Route;
 
 /**
  * Interface ClientInterface
@@ -28,8 +29,8 @@ interface ClientInterface extends
     /**
      * Performs a connection to defined endpoint with defined options
      *
-     * @param $method
-     * @param $route
+     * @param string $method
+     * @param Route|string $route
      * @param array $options
      * @return \GuzzleHttp\Message\ResponseInterface
      * @throws \Wonnova\SDK\Exception\ServerException

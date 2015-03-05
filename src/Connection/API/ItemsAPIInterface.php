@@ -12,7 +12,7 @@ use Wonnova\SDK\Model\User;
  */
 interface ItemsAPIInterface
 {
-    const ITEMS_LEADERBOARD_ROUTE   = '/items/leaderboard?minCount=%maxCount%';
+    const ITEMS_LEADERBOARD_ROUTE   = '/items/leaderboard';
     const ITEM_RATE_ROUTE           = '/items/rate';
     const ITEM_ROUTE                = '/items/%itemId%';
     const ITEM_RESET_SCORE_ROUTE    = '/items/%itemId%/reset-score';

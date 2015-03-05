@@ -18,6 +18,7 @@ use Wonnova\SDK\Exception\NotFoundException;
 use Wonnova\SDK\Exception\RuntimeException;
 use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Exception\ServerException;
+use Wonnova\SDK\Http\Route;
 use Wonnova\SDK\Model\Achievement;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Item;
@@ -100,8 +101,8 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Performs a connection to defined endpoint with defined options
      *
-     * @param $method
-     * @param $route
+     * @param string $method
+     * @param Route|string $route
      * @param array $options
      * @return \GuzzleHttp\Message\ResponseInterface
      * @throws \Wonnova\SDK\Exception\ServerException
@@ -111,6 +112,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function connect($method, $route, array $options = [])
     {
+        $route = sprintf('/rest%s', $route);
         // Perform authentication if token has not been set yet
         if (! isset($this->token)) {
             $this->authenticate();
@@ -193,7 +195,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     private function authenticate()
     {
-        $response = $this->send($this->createRequest('POST', URIUtils::parseUri(self::AUTH_ROUTE), [
+        $response = $this->send($this->createRequest('POST', self::AUTH_ROUTE, [
             'json' => $this->credentials->toArray()
         ]));
         $this->token = $this->serializer->deserialize(
@@ -221,7 +223,7 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Fetches a route and maps a resource list of models under provided key
      *
-     * @param $route
+     * @param Route|string $route
      * @param $resourceKey
      * @param $resourceClass
      * @return ArrayCollection
@@ -244,7 +246,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getUsers()
     {
-        $response = $this->connect('GET', URIUtils::parseUri(self::USERS_ROUTE));
+        $response = $this->connect('GET', self::USERS_ROUTE);
         $contents = $response->getBody()->getContents();
         return new ArrayCollection($this->serializer->deserialize(
             $contents,
@@ -261,7 +263,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getUser($userId)
     {
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ROUTE, [
+        $response = $this->connect('GET', new Route(self::USERS_ROUTE, [], [
             'userId' => $userId
         ]));
         $contents = $response->getBody()->getContents();
@@ -275,7 +277,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function createUser(User $user)
     {
-        $response = $this->connect('POST', URIUtils::parseUri(self::USERS_ROUTE), [
+        $response = $this->connect('POST', self::USERS_ROUTE, [
             'json' => $user
         ]);
         $contents = $response->getBody()->getContents();
@@ -296,7 +298,7 @@ class Client extends GuzzleClient implements ClientInterface
             throw new InvalidArgumentException('Provided user has an empty userId.');
         }
 
-        $response = $this->connect('PUT', URIUtils::parseUri(self::UPDATE_USER_ROUTE, [
+        $response = $this->connect('PUT', new Route(self::UPDATE_USER_ROUTE, [
             'userId' => $userId
         ]), [
             'json' => $user
@@ -315,7 +317,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserNotifications($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceCollection(URIUtils::parseUri(self::USER_NOTIFICATIONS_ROUTE, [
+        return $this->getResourceCollection(new Route(self::USER_NOTIFICATIONS_ROUTE, [
             'userId' => $userId
         ]), 'notifications', 'Wonnova\SDK\Model\Notification');
     }
@@ -329,7 +331,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserBadges($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceCollection(URIUtils::parseUri(self::USER_BADGES_ROUTE, [
+        return $this->getResourceCollection(new Route(self::USER_BADGES_ROUTE, [
             'userId' => $userId
         ]), 'badges', 'Wonnova\SDK\Model\Badge');
     }
@@ -348,10 +350,11 @@ class Client extends GuzzleClient implements ClientInterface
         $types = empty($types) ? Achievement::getAllTypesList() : $types;
         $types = is_array($types) ? implode(',', $types) : $types;
 
-        return $this->getResourceCollection(URIUtils::parseUri(self::USER_ACHIEVEMENTS_ROUTE, [
-            'userId' => $userId,
-            'types' => $types
-        ]), 'achievements', 'Wonnova\SDK\Model\Achievement');
+        return $this->getResourceCollection(new Route(
+            self::USER_ACHIEVEMENTS_ROUTE,
+            ['userId' => $userId],
+            ['types' => $types]
+        ), 'achievements', 'Wonnova\SDK\Model\Achievement');
     }
 
     /**
@@ -364,7 +367,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserProgressInQuest($user, $questCode)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceCollection(URIUtils::parseUri(self::USER_QUEST_PROGRESS_ROUTE, [
+        return $this->getResourceCollection(new Route(self::USER_QUEST_PROGRESS_ROUTE, [
             'userId' => $userId,
             'questCode' => $questCode
         ]), 'questSteps', 'Wonnova\SDK\Model\QuestStep');
@@ -377,11 +380,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getQuests()
     {
-        return $this->getResourceCollection(
-            URIUtils::parseUri(self::QUESTS_ROUTE),
-            'quests',
-            'Wonnova\SDK\Model\Quest'
-        );
+        return $this->getResourceCollection(self::QUESTS_ROUTE, 'quests', 'Wonnova\SDK\Model\Quest');
     }
 
     /**
@@ -393,7 +392,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function getUserStatusInQuests($user)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-        return $this->getResourceCollection(URIUtils::parseUri(self::USER_QUESTS_STATUS_ROUTE, [
+        return $this->getResourceCollection(new Route(self::USER_QUESTS_STATUS_ROUTE, [
             'userId' => $userId
         ]), 'quests', 'Wonnova\SDK\Model\Quest');
     }
@@ -403,11 +402,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getLevels()
     {
-        return $this->getResourceCollection(
-            URIUtils::parseUri(self::LEVELS_ROUTE),
-            'levels',
-            'Wonnova\SDK\Model\Level'
-        );
+        return $this->getResourceCollection(self::LEVELS_ROUTE, 'levels', 'Wonnova\SDK\Model\Level');
     }
 
     /**
@@ -421,7 +416,7 @@ class Client extends GuzzleClient implements ClientInterface
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
 
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_LEVEL_ROUTE, [
+        $response = $this->connect('GET', new Route(self::USER_LEVEL_ROUTE, [
             'userId' => $userId,
             'scenarioCode' => $scenarioCode
         ]));
@@ -440,19 +435,19 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getTeamsLeaderboard($maxCount = null, $user = null)
     {
-        $routeParams = [
-            'userId' => '',
-            'maxCount' => ''
+        $queryParams = [
+            'userId' => null,
+            'maxCount' => null
         ];
         if (is_int($maxCount)) {
-            $routeParams['maxCount'] = $maxCount;
+            $queryParams['maxCount'] = $maxCount;
         }
         if (isset($user)) {
-            $routeParams['userId'] = $user instanceof User ? $user->getUserId() : $user;
+            $queryParams['userId'] = $user instanceof User ? $user->getUserId() : $user;
         }
 
         return $this->getResourceCollection(
-            URIUtils::parseUri(self::TEAMS_LEADERBOARD_ROUTE, $routeParams),
+            new Route(self::TEAMS_LEADERBOARD_ROUTE, [], $queryParams),
             'scores',
             'Wonnova\SDK\Model\Team'
         );
@@ -466,8 +461,8 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getItemsLeaderboard($maxCount = 6)
     {
-        return $this->getResourceCollection(URIUtils::parseUri(self::ITEMS_LEADERBOARD_ROUTE, [
-            'maxCount' => $maxCount
+        return $this->getResourceCollection(new Route(self::ITEMS_LEADERBOARD_ROUTE, [], [
+            'minCount' => $maxCount
         ]), 'leaderboard', 'Wonnova\SDK\Model\Item');
     }
 
@@ -488,7 +483,7 @@ class Client extends GuzzleClient implements ClientInterface
                 'id' => $item
             ]
         ];
-        $response = $this->connect('POST', URIUtils::parseUri(self::ITEM_RATE_ROUTE), [
+        $response = $this->connect('POST', self::ITEM_RATE_ROUTE, [
             'json' => $data
         ]);
         $contents = $response->getBody()->getContents();
@@ -513,7 +508,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function deleteItem($item)
     {
         $itemId = $item instanceof Item ? $item->getItemId() : $item;
-        $this->connect('DELETE', URIUtils::parseUri(self::ITEM_ROUTE, [
+        $this->connect('DELETE', new Route(self::ITEM_ROUTE, [
             'itemId' => $itemId
         ]));
     }
@@ -527,7 +522,7 @@ class Client extends GuzzleClient implements ClientInterface
     public function resetItemScore($item)
     {
         $itemId = $item instanceof Item ? $item->getItemId() : $item;
-        $this->connect('PUT', URIUtils::parseUri(self::ITEM_RESET_SCORE_ROUTE, [
+        $this->connect('PUT', new Route(self::ITEM_RESET_SCORE_ROUTE, [
             'itemId' => $itemId
         ]));
     }
@@ -542,7 +537,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getUserData($userId)
     {
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ABOUT_ROUTE, [
+        $response = $this->connect('GET', new Route(self::USER_ABOUT_ROUTE, [
             'userId' => $userId
         ]));
         $contents = $response->getBody()->getContents();
@@ -581,7 +576,7 @@ class Client extends GuzzleClient implements ClientInterface
         }
 
         // Perform request
-        $this->connect('POST', URIUtils::parseUri(self::ACTION_NOTIFICATION_ROUTE), [
+        $this->connect('POST', self::ACTION_NOTIFICATION_ROUTE, [
             'json' => $requestData
         ]);
     }
@@ -614,7 +609,7 @@ class Client extends GuzzleClient implements ClientInterface
         }
 
         // Perform request
-        $this->connect('POST', URIUtils::parseUri(self::INTERACTION_NOTIFICATION_ROUTE), [
+        $this->connect('POST', self::INTERACTION_NOTIFICATION_ROUTE, [
             'json' => $requestData
         ]);
     }
@@ -628,7 +623,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function getUserActionOccurrences($user, $actionCode)
     {
-        $response = $this->connect('GET', URIUtils::parseUri(self::USER_ACTION_OCCURRENCES_ROUTE, [
+        $response = $this->connect('GET', new Route(self::USER_ACTION_OCCURRENCES_ROUTE, [
             'userId' => $user instanceof User ? $user->getUserId() : $user,
             'actionCode' => $actionCode
         ]));
@@ -659,7 +654,7 @@ class Client extends GuzzleClient implements ClientInterface
             ]
         ];
 
-        $response = $this->connect('POST', URIUtils::parseUri(self::INTERACTION_STATUS_ROUTE), [
+        $response = $this->connect('POST', self::INTERACTION_STATUS_ROUTE, [
             'json' => $requestData
         ]);
         $contents = $response->getBody()->getContents();

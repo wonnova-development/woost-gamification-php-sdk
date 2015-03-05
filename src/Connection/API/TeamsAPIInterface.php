@@ -12,7 +12,7 @@ use Wonnova\SDK\Model\User;
  */
 interface TeamsAPIInterface
 {
-    const TEAMS_LEADERBOARD_ROUTE = '/teams/leaderboard?userId=%userId%&maxCount=%maxCount%';
+    const TEAMS_LEADERBOARD_ROUTE = '/teams/leaderboard';
 
     /**
      * Returns the list of top teams ordered by total score of their members
