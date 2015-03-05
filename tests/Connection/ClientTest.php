@@ -26,7 +26,7 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->client = new Client(new Credentials(''), 'es', new ArrayCache());
+        $this->client = new Client(new Credentials('123'), 'es', new ArrayCache());
 
         $this->subscriber = new Mock([
             // Add the auth token response that will be requested before every test
@@ -539,5 +539,25 @@ class ClientTest extends TestCase
 
         $expected = 7;
         $this->assertEquals($expected, $this->client->getUserActionOccurrences('', ''));
+    }
+
+    public function testExpiredAuthTokenPerformsAuthentication()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        // Add invalid token response to the stack
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/invalidToken.json', 'r'));
+        $this->subscriber->addResponse(new Response(401, [], $body));
+        // Add the token response that will be used for reauthentication
+        $this->subscriber->addResponse(new Response(200, [], new Stream(
+            fopen('data://text/plain,{"token": "foobar"}', 'r')
+        )));
+        // Add a valid response that will be used after the new authentication
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUser.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $this->client->getUser('');
+        $this->assertCount(4, $history);
     }
 }

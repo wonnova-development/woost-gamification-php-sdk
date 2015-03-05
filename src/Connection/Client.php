@@ -134,7 +134,7 @@ class Client extends GuzzleClient implements ClientInterface
                 $message = json_decode($response->getBody()->getContents(), true);
 
                 // If the server returned an INVALID_TOKEN response, reconnect
-                if ($message['error'] === ResponseCodes::INVALID_TOKEN) {
+                if (isset($message['error']) && $message['error'] === ResponseCodes::INVALID_TOKEN) {
                     $this->resetToken();
                     return $this->connect($method, $route, $options);
                     break;
