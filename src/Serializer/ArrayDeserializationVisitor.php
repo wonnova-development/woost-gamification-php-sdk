@@ -13,6 +13,10 @@ class ArrayDeserializationVisitor extends GenericDeserializationVisitor
 {
     protected function decode($str)
     {
+        if (empty($str)) {
+            return [];
+        }
+
         if ($str instanceof \Traversable) {
             $str = iterator_to_array($str);
         }

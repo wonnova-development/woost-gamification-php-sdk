@@ -37,7 +37,7 @@ use Wonnova\SDK\Serializer\SerializerFactory;
  */
 class Client extends GuzzleClient implements ClientInterface
 {
-    const AUTH_ROUTE = '/auth';
+    const AUTH_ROUTE = '/rest/auth';
 
     const HOST = 'https://secure.wonnova.com';
 
