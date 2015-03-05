@@ -61,6 +61,10 @@ class Route
         if (! empty($this->queryParams)) {
             $uri = $uri . '?';
             foreach ($this->queryParams as $key => $value) {
+                if (empty($value)) {
+                    continue;
+                }
+
                 $uri .= sprintf('%s=%s&', $key, $value);
             }
             // Remove the last ampersand

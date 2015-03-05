@@ -51,4 +51,21 @@ class RouteTest extends TestCase
         ]);
         $this->assertEquals('/foo/12345/bar/value?foo=1&bar=2', $route->__toString());
     }
+
+    public function testEmptyQueryParamsAreIgnored()
+    {
+        $routePattern = '/foo/bar';
+        $route = new Route($routePattern, [], [
+            'foo' => null,
+            'bar' => 'hello',
+            'baz' => ''
+        ]);
+        $this->assertEquals('/foo/bar?bar=hello', $route->__toString());
+
+        $route = new Route($routePattern, [], [
+            'foo' => null,
+            'bar' => ''
+        ]);
+        $this->assertEquals($routePattern, $route->__toString());
+    }
 }
