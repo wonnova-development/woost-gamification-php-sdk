@@ -1,0 +1,37 @@
+{
+    "status": 0,
+    "scores": [
+        {
+            "teamName": "ANOTHER_TEAM",
+            "avatar": "https://secure.wonnova.com/dashboard/api/team/3/avatar",
+            "description": "",
+            "score": "2060",
+            "itsMe": "0",
+            "position": 1
+        },
+        {
+            "teamName": "WHATEVER",
+            "avatar": null,
+            "description": null,
+            "score": "2000",
+            "itsMe": "0",
+            "position": 2
+        },
+        {
+            "teamName": "ANOTHER_MORE",
+            "avatar": "",
+            "description": "",
+            "score": "1075",
+            "itsMe": "1",
+            "position": 3
+        },
+        {
+            "teamName": "TEAM_1",
+            "avatar": "https://secure.wonnova.com/dashboard/api/team/1/avatar",
+            "description": "",
+            "score": "533",
+            "itsMe": "0",
+            "position": 4
+        }
+    ]
+}

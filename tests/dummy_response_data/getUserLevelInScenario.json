@@ -1,0 +1,26 @@
+{
+    "status": 0,
+    "level": {
+        "id": "33",
+        "code": "LEARNER",
+        "name": "Learner",
+        "score": 10,
+        "generatesNotification": true,
+        "categoryEnabled": false,
+        "imageUrl": "default.png",
+        "dateCreated": "2014-05-29T10:08:03+0200",
+        "badge": {
+            "id": "55",
+            "name": "The badge",
+            "description": "",
+            "imageUrl": "",
+            "type": "consecutive_days",
+            "notificationDate": "2014-05-10T15:00:10+0200"
+        },
+        "dynamic": {
+            "id": "33",
+            "code": "VCM",
+            "name": "VCM"
+        }
+    }
+}

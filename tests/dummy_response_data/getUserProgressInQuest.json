@@ -1,0 +1,37 @@
+{
+    "status": "0",
+    "questSteps": [
+        {
+            "id": "844",
+            "type": "action",
+            "code": "DOUBLE_LOGIN",
+            "name": "Double login",
+            "description": "You have done two logins!",
+            "completed": false
+        },
+        {
+            "id": "28",
+            "type": "quest",
+            "code": "FILL_PROFILE",
+            "name": "Fill profile",
+            "description": "The user must fill his/her profile",
+            "completed": false
+        },
+        {
+            "id": "1950",
+            "type": "action",
+            "code": "SHARE",
+            "name": "Action",
+            "description": "This is an action",
+            "completed": true
+        },
+        {
+            "id": "3",
+            "type": "badge",
+            "code": null,
+            "name": "First occurrenced",
+            "description": "You have performed your first login!",
+            "completed": false
+        }
+    ]
+}

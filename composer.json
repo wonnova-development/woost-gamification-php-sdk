@@ -1,5 +1,5 @@
 {
-    "name": "wonnova/sdk",
+    "name": "wonnova/wonnova-php-sdk",
     "description": "Wonnova SDK for PHP. Use Wonnova's RESTful API directly from your PHP projects",
     "license": "MIT",
     "authors": [
@@ -10,12 +10,15 @@
     ],
     "require": {
         "php": ">=5.4",
-        "guzzle/guzzle": "~3.9",
-        "netresearch/jsonmapper": "~0.4"
+        "guzzlehttp/guzzle": "~5.0",
+        "jms/serializer": "0.16.*",
+        "doctrine/common": "~2.4",
+        "doctrine/cache": "~1.4"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
-        "squizlabs/php_codesniffer": "~1.5"
+        "squizlabs/php_codesniffer": "~1.5",
+        "guzzlehttp/log-subscriber": "~1.0"
     },
     "autoload": {
         "psr-4": {

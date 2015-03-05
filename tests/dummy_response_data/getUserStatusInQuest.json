@@ -1,0 +1,91 @@
+{
+    "status": 0,
+    "quests": [
+        {
+            "code": "FILL_PROFILE",
+            "name": "Fill profile",
+            "description": "Fill profile",
+            "progress": 0,
+            "questSteps": []
+        },
+        {
+            "code": "MISSION_IMPOSSIBLE",
+            "name": "Mission: impossible",
+            "description": "This is an impossible mission",
+            "progress": 100,
+            "questSteps": [
+                {
+                    "id": "270",
+                    "type": "badge",
+                    "code": null,
+                    "name": "Medalla",
+                    "description": "Little badge.",
+                    "completed": true
+                },
+                {
+                    "id": "1",
+                    "type": "quest",
+                    "code": "QUEST_TEST1",
+                    "name": "Fill profile",
+                    "description": "Fill profile",
+                    "completed": true
+                }
+            ]
+        },
+        {
+            "code": "NEW",
+            "name": "r23",
+            "description": "r23",
+            "progress": 50,
+            "questSteps": [
+                {
+                    "id": "3",
+                    "type": "badge",
+                    "code": null,
+                    "name": "First occurrenced",
+                    "description": "First login!",
+                    "completed": true
+                },
+                {
+                    "id": "844",
+                    "type": "action",
+                    "code": "DOUBLE_LOGIN",
+                    "name": "Acción",
+                    "description": "ddd",
+                    "completed": false
+                }
+            ]
+        },
+        {
+            "code": "QUEST_TEST1",
+            "name": "Rellenar Perfil",
+            "description": "Completa los siguientes pasos para completar el quest!",
+            "progress": 0,
+            "questSteps": []
+        },
+        {
+            "code": "TESTING_QUEST",
+            "name": "testing quest",
+            "description": "testing quest",
+            "progress": 25,
+            "questSteps": [
+                {
+                    "id": "3",
+                    "type": "badge",
+                    "code": null,
+                    "name": "First occurrenced",
+                    "description": "First login!",
+                    "completed": true
+                },
+                {
+                    "id": "844",
+                    "type": "action",
+                    "code": "DOUBLE_LOGIN",
+                    "name": "An Action",
+                    "description": "ddd",
+                    "completed": false
+                }
+            ]
+        }
+    ]
+}

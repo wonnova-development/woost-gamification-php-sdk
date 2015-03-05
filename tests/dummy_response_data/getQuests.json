@@ -1,0 +1,29 @@
+{
+    "status": 0,
+    "quests": [
+        {
+            "id": "28",
+            "startDate": "2014-06-01T00:00:00+0100",
+            "code": "FILL_PROFILE",
+            "generatesNotification": true,
+            "name": "Fill profile",
+            "description": "The user must fill his/her profile"
+        },
+        {
+            "id": "29",
+            "startDate": "2014-06-02T12:03:27+0100",
+            "code": "MISION_IMPOSIBLE",
+            "generatesNotification": true,
+            "name": "Mission imposible",
+            "description": "This mission is impossible"
+        },
+        {
+            "id": "1",
+            "startDate": "2013-08-15T00:00:00+0100",
+            "code": "QUEST_TEST1",
+            "generatesNotification": true,
+            "name": "A quest",
+            "description": "Accomplish these steps to complete the quest!"
+        }
+    ]
+}

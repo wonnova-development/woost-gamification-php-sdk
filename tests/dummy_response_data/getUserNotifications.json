@@ -1,0 +1,17 @@
+{
+    "status": "0",
+    "notifications": [
+        {
+            "type": "points",
+            "message": "First pending notification"
+        },
+        {
+            "type": "points",
+            "message": "Second pending notification"
+        },
+        {
+            "type": "badges",
+            "message": "Third pending notification"
+        }
+    ]
+}
