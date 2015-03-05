@@ -464,4 +464,70 @@ class ClientTest extends TestCase
             'categories' => ['foo', 'bar']
         ], $request);
     }
+
+    public function testNotifyInteraction()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifyInteraction('user', 'target-user', 'RATE');
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => 'user',
+            'interactionCode' => 'RATE',
+            'targetUserId' => 'target-user'
+        ], $request);
+    }
+
+    public function testNotifyInteractionWIthItem()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifyInteraction('user', 'target-user', 'RATE', 'the-item');
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => 'user',
+            'interactionCode' => 'RATE',
+            'targetUserId' => 'target-user',
+            'item' => [
+                'id' => 'the-item'
+            ]
+        ], $request);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $item = new Item();
+        $item->setItemId('the-item')
+             ->setAuthor('the-author');
+        $this->client->notifyInteraction('user', 'target-user', 'RATE', $item);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => 'user',
+            'interactionCode' => 'RATE',
+            'targetUserId' => 'target-user',
+            'item' => $item->toArray()
+        ], $request);
+    }
+
+    public function testNotifyInteractionWithCategories()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifyInteraction('user', 'target-user', 'RATE', null, ['foo', 'bar']);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => 'user',
+            'interactionCode' => 'RATE',
+            'targetUserId' => 'target-user',
+            'categories' => ['foo', 'bar']
+        ], $request);
+    }
 }
