@@ -530,4 +530,14 @@ class ClientTest extends TestCase
             'categories' => ['foo', 'bar']
         ], $request);
     }
+
+    public function testGetUserActionOccurrences()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserActionOccurrences.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $expected = 7;
+        $this->assertEquals($expected, $this->client->getUserActionOccurrences('', ''));
+    }
 }
