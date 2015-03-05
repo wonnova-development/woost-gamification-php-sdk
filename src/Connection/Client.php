@@ -11,7 +11,6 @@ use Wonnova\SDK\Auth\Token;
 use Wonnova\SDK\Auth\TokenInterface;
 use Wonnova\SDK\Common\Headers;
 use Wonnova\SDK\Common\ResponseCodes;
-use Wonnova\SDK\Common\URIUtils;
 use Wonnova\SDK\Exception\InvalidArgumentException;
 use Wonnova\SDK\Exception\InvalidRequestException;
 use Wonnova\SDK\Exception\NotFoundException;
@@ -39,8 +38,11 @@ use Wonnova\SDK\Serializer\SerializerFactory;
 class Client extends GuzzleClient implements ClientInterface
 {
     const AUTH_ROUTE = '/auth';
-    const USER_AGENT = 'wonnova-php-sdk';
-    const TOKEN_KEY = 'wonnova_auth_token';
+
+    const HOST = 'https://secure.wonnova.com';
+
+    const USER_AGENT    = 'wonnova-php-sdk';
+    const TOKEN_KEY     = 'wonnova_auth_token';
 
     /**
      * @var CredentialsInterface
@@ -76,7 +78,7 @@ class Client extends GuzzleClient implements ClientInterface
         $baseUrl = null
     ) {
         parent::__construct([
-            'base_url' => $baseUrl ?: URIUtils::HOST,
+            'base_url' => $baseUrl ?: self::HOST,
             'defaults' => [
                 'headers' => [
                     'User-Agent' => self::USER_AGENT
