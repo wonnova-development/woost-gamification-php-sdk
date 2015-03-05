@@ -4,6 +4,7 @@ namespace Wonnova\SDK\Test\Connection;
 use Doctrine\Common\Cache\ArrayCache;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Subscriber\Mock;
 use PHPUnit_Framework_TestCase as TestCase;
 use Wonnova\SDK\Auth\Credentials;
@@ -269,6 +270,26 @@ class ClientTest extends TestCase
             $this->assertEquals($teamsData[$key]['position'], $team->getPosition());
             $this->assertEquals($teamsData[$key]['score'], $team->getScore());
         }
+    }
+
+    public function testGetTeamsLeaderboardWithParams()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getTeamsLeaderboard.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+        $this->client->getTeamsLeaderboard(10);
+        $queryParams = $history->getLastRequest()->getQuery()->toArray();
+        $this->assertArrayHasKey('maxCount', $queryParams);
+        $this->assertEquals(10, $queryParams['maxCount']);
+
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getTeamsLeaderboard.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+        $this->client->getTeamsLeaderboard(null, '12345');
+        $queryParams = $history->getLastRequest()->getQuery()->toArray();
+        $this->assertArrayHasKey('userId', $queryParams);
+        $this->assertEquals('12345', $queryParams['userId']);
     }
 
     public function testGetItemsLeaderboard()
