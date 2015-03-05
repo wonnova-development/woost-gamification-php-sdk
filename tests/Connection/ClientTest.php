@@ -610,4 +610,23 @@ class ClientTest extends TestCase
         $this->subscriber->addResponse(new Response(403, [], $body));
         $this->client->getUsers();
     }
+
+    public function testCachedTokenDoNotPerformAditionalRequests()
+    {
+        $cache = new ArrayCache();
+        $cache->save(Client::TOKEN_KEY, 'foobar');
+        $this->client = new Client(new Credentials('123'), 'es', $cache);
+
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+        $subscriber = new Mock();
+        $this->client->getEmitter()->attach($subscriber);
+
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUsers.json', 'r'));
+        $subscriber->addResponse(new Response(200, [], $body));
+
+        $this->client->getUsers();
+        $this->assertCount(1, $history);
+    }
 }
