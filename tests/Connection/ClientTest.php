@@ -337,7 +337,7 @@ class ClientTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function resetItemScore()
+    public function testResetItemScore()
     {
         // Set mocked response
         $body = new Stream(fopen('data://text/plain,[]', 'r'));
