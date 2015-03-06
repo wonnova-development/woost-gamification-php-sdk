@@ -1,12 +1,12 @@
-# Wonnova PHP SDK
+# Wonnova - Woost gamification PHP SDK
 
-Wonnova SDK for PHP. Use Wonnova's RESTful API directly from your PHP projects
+Woost SDK for PHP. Use [Woost](http://www.wonnova.com/woost)'s RESTful API directly from your PHP projects
 
 ### Installation
 
 The preferred installation method is [composer](https://getcomposer.com). Just run this in your project in order to update your `composer.json` file and install your dependencies.
 
-    composer require wonnova/wonnova-php-sdk ~0.1
+    composer require wonnova/woost-gamification-php-sdk ~0.1
     
 If you never worked with composer, take a look at its [documentation](https://getcomposer.org/doc/).
 
@@ -159,6 +159,6 @@ $wonnovaClient->getUsers(); // This won't perform a real HTTP request
 
 You just need to set a response content that is compatible with what the SDK expectes to get from the request.
 
-### RESTful API
+### Documentation
 
-If you need to know the specifications of the API that is consumed by this SDK, follow this link https://secure.wonnova.com/tutorial
+If you need to know the specifications of the API that is consumed by this SDK, or want to get an extended documentation of the SDK itself, feel free to [contact us](http://www.wonnova.com/contacto).
