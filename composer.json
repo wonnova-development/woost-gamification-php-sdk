@@ -1,7 +1,12 @@
 {
-    "name": "wonnova/wonnova-php-sdk",
-    "description": "Wonnova SDK for PHP. Use Wonnova's RESTful API directly from your PHP projects",
+    "name": "wonnova/woost-gamification-php-sdk",
+    "description": "Woost SDK for PHP. Use Woost's RESTful API directly from your PHP projects",
     "license": "MIT",
+    "keywords": [
+        "wonnova",
+        "woost",
+        "gamification"
+    ],
     "authors": [
         {
             "name": "Wonnova Gamification",
