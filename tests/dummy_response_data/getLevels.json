@@ -2,7 +2,6 @@
     "status": 0,
     "levels": [
         {
-            "id": "33",
             "code": "LEARNER",
             "name": "Learner",
             "score": 10,
@@ -12,13 +11,11 @@
             "dateCreated": "2014-05-29T10:08:03+0200",
             "badge": null,
             "dynamic": {
-                "id": "33",
                 "code": "VCM",
                 "name": "VCM"
             }
         },
         {
-            "id": "35",
             "code": "MASTER",
             "name": "Master",
             "score": 2000,
@@ -27,7 +24,6 @@
             "imageUrl": "https://secure.wonnova.com/rest/levels/35/image",
             "dateCreated": "2014-05-29T10:08:03+0200",
             "badge": {
-                "id": "55",
                 "name": "The badge",
                 "description": "",
                 "imageUrl": "",
