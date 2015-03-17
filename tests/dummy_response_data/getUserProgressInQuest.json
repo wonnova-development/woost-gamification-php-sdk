@@ -2,7 +2,6 @@
     "status": "0",
     "questSteps": [
         {
-            "id": "844",
             "type": "action",
             "code": "DOUBLE_LOGIN",
             "name": "Double login",
@@ -10,7 +9,6 @@
             "completed": false
         },
         {
-            "id": "28",
             "type": "quest",
             "code": "FILL_PROFILE",
             "name": "Fill profile",
@@ -18,7 +16,6 @@
             "completed": false
         },
         {
-            "id": "1950",
             "type": "action",
             "code": "SHARE",
             "name": "Action",
@@ -26,7 +23,6 @@
             "completed": true
         },
         {
-            "id": "3",
             "type": "badge",
             "code": null,
             "name": "First occurrenced",
