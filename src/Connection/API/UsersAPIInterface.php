@@ -7,6 +7,7 @@ use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\Quest;
 use Wonnova\SDK\Model\QuestStep;
+use Wonnova\SDK\Model\Update;
 use Wonnova\SDK\Model\User;
 
 /**
@@ -25,6 +26,7 @@ interface UsersAPIInterface
     const USER_QUESTS_STATUS_ROUTE      = '/rest/users/%userId%/quests/status';
     const USER_ABOUT_ROUTE              = '/rest/users/%userId%/about';
     const USER_ACTION_OCCURRENCES_ROUTE = '/rest/users/%userId%/actions/%actionCode%/occurrences';
+    const USER_LAST_UPDATES             = '/rest/users/%userId%/last-updates';
 
     /**
      * Returns users list
@@ -116,4 +118,13 @@ interface UsersAPIInterface
      * @return int
      */
     public function getUserActionOccurrences($user, $actionCode);
+
+    /**
+     * Returns the list of most recent updates for certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param int $maxCount
+     * @return Collection|Update[]
+     */
+    public function getUserLastUpdates($user, $maxCount = null);
 }
