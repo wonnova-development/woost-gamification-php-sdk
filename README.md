@@ -31,7 +31,7 @@ $wonnovaClient = new \Wonnova\SDK\Connection\Client(
 // After this point, you are able to perform requests to the API
 try {
     // Create a new user in your system
-    $user = new User();
+    $user = new \Wonnova\SDK\Model\User();
     $user->setUsername('john.doe')
          ->setProvider('my_company_name')
          ->setFullName('John Doe')
