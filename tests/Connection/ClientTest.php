@@ -10,6 +10,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Wonnova\SDK\Auth\Credentials;
 use Wonnova\SDK\Connection\Client;
 use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Action;
 use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\User;
 
@@ -462,6 +463,125 @@ class ClientTest extends TestCase
             'userId' => '12345',
             'actionCode' => 'LOGIN',
             'categories' => ['foo', 'bar']
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsAsString()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifySeveralActions('12345', ['LOGIN', 'SIGNUP']);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                ['actionCode' => 'LOGIN'],
+                ['actionCode' => 'SIGNUP'],
+            ]
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsAsActionClass()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+
+        $actionLogin = new Action();
+        $actionLogin->setActionCode('LOGIN');
+
+        $actionSignup = new Action();
+        $actionSignup->setActionCode('SIGNUP');
+
+        $this->client->notifySeveralActions('12345', [$actionLogin, $actionSignup]);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                ['actionCode' => 'LOGIN'],
+                ['actionCode' => 'SIGNUP'],
+            ]
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsWIthItem()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+
+        $item = new Item();
+        $item->setItemId('the-item');
+        $actionLogin = new Action();
+        $actionLogin->setActionCode('LOGIN')
+        ->setItem($item);
+
+        $actionSignup = new Action();
+        $actionSignup->setActionCode('SIGNUP');
+
+        $this->client->notifySeveralActions('12345', [$actionLogin, $actionSignup]);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                [
+                    'actionCode' => 'LOGIN',
+                    'item' => [
+                        'id' => 'the-item',
+                        'title' => null,
+                        'description' => null,
+                        'author' => null,
+                    ]
+                ],
+                ['actionCode' => 'SIGNUP'],
+            ],
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsWithCategories()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+
+        $item = new Item();
+        $item->setItemId('the-item');
+        $actionLogin = new Action();
+        $actionLogin->setActionCode('LOGIN')
+            ->setItem($item);
+
+        $actionSignup = new Action();
+        $actionSignup->setActionCode('SIGNUP')
+            ->setCategories(['foo', 'bar']);
+
+        $this->client->notifySeveralActions('12345', [$actionLogin, $actionSignup]);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                [
+                    'actionCode' => 'LOGIN',
+                    'item' => [
+                        'id' => 'the-item',
+                        'title' => null,
+                        'description' => null,
+                        'author' => null,
+                    ]
+                ],
+                [
+                    'actionCode' => 'SIGNUP',
+                    'categories' => ['foo', 'bar'],
+                ],
+            ],
         ], $request);
     }
 

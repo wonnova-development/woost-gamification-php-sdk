@@ -19,6 +19,7 @@ use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Exception\ServerException;
 use Wonnova\SDK\Http\Route;
 use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Action;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\Level;
@@ -575,6 +576,40 @@ class Client extends GuzzleClient implements ClientInterface
 
         // Perform request
         $this->connect('POST', self::ACTION_NOTIFICATION_ROUTE, [
+            'json' => $requestData
+        ]);
+    }
+
+    /**
+     * Performs an action notification from certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param array $actions array of Action objects or strings
+     * @return void
+     */
+    public function notifySeveralActions($user, array $actions)
+    {
+        // Prepare request body
+        $requestData = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'actions' => [],
+        ];
+
+        foreach ($actions as $action) {
+
+            if (is_string($action)) {
+                $actionCode = $action;
+                $action = new Action();
+                $action->setActionCode($actionCode);
+            }
+
+            if ($action instanceof Action) {
+                $requestData['actions'][] = $action->toArray();
+            }
+        }
+
+        // Perform request
+        $this->connect('POST', self::ACTION_NOTIFY_SEVERAL_ROUTE, [
             'json' => $requestData
         ]);
     }
