@@ -13,7 +13,8 @@ use Wonnova\SDK\Model\User;
 interface LevelsAPIInterface
 {
     const LEVELS_ROUTE      = '/rest/levels';
-    const USER_LEVEL_ROUTE  = '/rest/levels/users/%userId%/scenarios/%scenarioCode%';
+    const USER_LEVEL_WITH_SCENARIO_ROUTE  = '/rest/levels/users/%userId%/scenarios/%scenarioCode%';
+    const USER_LEVEL_ROUTE  = '/rest/levels/users/%userId%';
     const LEVEL_IMAGE_ROUTE = '/rest/levels/%levelId%/image';
 
     /**
