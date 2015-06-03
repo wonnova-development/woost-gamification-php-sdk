@@ -27,6 +27,7 @@ use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\Quest;
 use Wonnova\SDK\Model\QuestStep;
 use Wonnova\SDK\Model\Team;
+use Wonnova\SDK\Model\Update;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use Wonnova\SDK\Serializer\SerializerFactory;
@@ -699,5 +700,24 @@ class Client extends GuzzleClient implements ClientInterface
         }
 
         return $responseData;
+    }
+
+    /**
+     * Returns the list of most recent updates for certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param int $maxCount
+     * @return Collection|Update[]
+     */
+    public function getUserLastUpdates($user, $maxCount = null)
+    {
+        $queryParams = [];
+        if (is_int($maxCount)) {
+            $queryParams['minCount'] = $maxCount;
+        }
+        $route = new Route(self::USER_LAST_UPDATES, [
+            'userId' => $user instanceof User ? $user->getUserId() : $user
+        ], $queryParams);
+        return $this->getResourceCollection($route, 'lastUpdates', 'Wonnova\SDK\Model\Update');
     }
 }

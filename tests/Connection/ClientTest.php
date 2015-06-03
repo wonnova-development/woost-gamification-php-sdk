@@ -661,6 +661,26 @@ class ClientTest extends TestCase
         $this->assertEquals($expected, $this->client->getUserActionOccurrences('', ''));
     }
 
+    public function testGetUserLastUpdates()
+    {
+        $lastUpdatesData = json_decode(
+            file_get_contents(__DIR__ . '/../dummy_response_data/getUserLastUpdates.json'),
+            true
+        );
+        $lastUpdatesData = $lastUpdatesData['lastUpdates'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserLastUpdates.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $lastUpdates = $this->client->getUserLastUpdates('', 4);
+        $this->assertCount(4, $lastUpdates);
+        foreach ($lastUpdates as $key => $update) {
+            $this->assertEquals($lastUpdatesData[$key]['text'], $update->getText());
+            $this->assertInstanceOf('DateTime', $update->getDate());
+            $this->assertEquals($lastUpdatesData[$key]['type'], $update->getType());
+        }
+    }
+
     public function testExpiredAuthTokenPerformsAuthentication()
     {
         $history = new History();
