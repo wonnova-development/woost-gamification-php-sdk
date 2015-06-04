@@ -408,17 +408,24 @@ class Client extends GuzzleClient implements ClientInterface
      * Returns the level of a user in certain scenario
      *
      * @param User|string $user A User model or userId
-     * @param string $scenarioCode
+     * @param string|null $scenarioCode
      * @return Level
      */
-    public function getUserLevelInScenario($user, $scenarioCode)
+    public function getUserLevelInScenario($user, $scenarioCode = null)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-
-        $response = $this->connect('GET', new Route(self::USER_LEVEL_ROUTE, [
+        $route = self::USER_LEVEL_ROUTE;
+        $options = [
             'userId' => $userId,
-            'scenarioCode' => $scenarioCode
-        ]));
+        ];
+
+        if (! empty($scenarioCode)) {
+            $route = self::USER_LEVEL_WITH_SCENARIO_ROUTE;
+            $options['scenarioCode'] = $scenarioCode;
+        }
+
+        $response = $this->connect('GET', new Route($route, $options));
+
         $contents = $response->getBody()->getContents();
         $contents = $this->serializer->deserialize($contents, 'array', 'json');
         return $this->serializer->deserialize($contents['level'], 'Wonnova\SDK\Model\Level', 'array');

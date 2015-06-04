@@ -238,13 +238,30 @@ class ClientTest extends TestCase
         }
     }
 
+    public function testGetUserLevel()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserLevelInScenario.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $level = $this->client->getUserLevelInScenario('1234');
+        $this->assertEquals('LEARNER', $level->getCode());
+        $this->assertEquals(true, $level->getGeneratesNotification());
+        $this->assertEquals('default.png', $level->getImageUrl());
+        $this->assertInstanceOf('DateTime', $level->getDateCreated());
+        $this->assertInstanceOf('Wonnova\SDK\Model\Badge', $level->getBadge());
+        $this->assertEquals('The badge', $level->getBadge()->getName());
+        $this->assertInstanceOf('Wonnova\SDK\Model\Scenario', $level->getScenario());
+        $this->assertEquals('VCM', $level->getScenario()->getName());
+    }
+
     public function testGetUserLevelInScenario()
     {
         // Set mocked response
         $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserLevelInScenario.json', 'r'));
         $this->subscriber->addResponse(new Response(200, [], $body));
 
-        $level = $this->client->getUserLevelInScenario('', '');
+        $level = $this->client->getUserLevelInScenario('1234', 'GENERAL');
         $this->assertEquals('LEARNER', $level->getCode());
         $this->assertEquals(true, $level->getGeneratesNotification());
         $this->assertEquals('default.png', $level->getImageUrl());
