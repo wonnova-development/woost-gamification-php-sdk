@@ -28,8 +28,8 @@ interface LevelsAPIInterface
      * Returns the level of a user in certain scenario
      *
      * @param User|string $user A User model or userId
-     * @param string $scenarioCode
+     * @param string|null $scenarioCode
      * @return Level
      */
-    public function getUserLevelInScenario($user, $scenarioCode);
+    public function getUserLevelInScenario($user, $scenarioCode = null);
 }
