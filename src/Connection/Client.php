@@ -499,6 +499,38 @@ class Client extends GuzzleClient implements ClientInterface
     }
 
     /**
+     * Rates an item increasing its score and setting the rate from certain user.
+     *
+     * @param User|string $user a User model or userId
+     * @param array $items an array of Item models
+     * @return ArrayCollection
+     */
+    public function rateSeveralItems($user, array $items)
+    {
+        $data = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'itemsList' => [],
+        ];
+
+        foreach ($items as $item) {
+            if ($item instanceof Item) {
+                $data['itemsList'][] = $item->toArray();
+            }
+        }
+
+        $response = $this->connect('POST', self::ITEM_RATE_LIST_ROUTE, [
+            'json' => $data
+        ]);
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
+
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents['items'],
+            'array<Wonnova\SDK\Model\Item>',
+            'array'
+        ));
+    }
+
+    /**
      * Deletes certain item
      *
      * @param Item|string $item an Item model or itemId

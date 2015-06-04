@@ -14,6 +14,7 @@ interface ItemsAPIInterface
 {
     const ITEMS_LEADERBOARD_ROUTE   = '/rest/items/leaderboard';
     const ITEM_RATE_ROUTE           = '/rest/items/rate';
+    const ITEM_RATE_LIST_ROUTE      = '/rest/items/rate-list';
     const ITEM_ROUTE                = '/rest/items/%itemId%';
     const ITEM_RESET_SCORE_ROUTE    = '/rest/items/%itemId%/reset-score';
 

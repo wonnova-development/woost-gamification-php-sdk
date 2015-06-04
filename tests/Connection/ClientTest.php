@@ -328,6 +328,34 @@ class ClientTest extends TestCase
         $this->assertInstanceOf('DateTime', $item->getDateCreated());
     }
 
+    public function testRateSeveralItems()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/rateSeveralItems.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $item1 = new Item();
+        $item2 = new Item();
+
+        $items = $this->client->rateSeveralItems('1234', [$item1, $item2]);
+
+        $item1 = $items[0];
+        $this->assertEquals('1234', $item1->getItemId());
+        $this->assertEquals('the title', $item1->getTitle());
+        $this->assertNull($item1->getDescription());
+        $this->assertNull($item1->getAuthor());
+        $this->assertEquals(2400, $item1->getScore());
+        $this->assertInstanceOf('DateTime', $item1->getDateCreated());
+
+        $item2 = $items[1];
+        $this->assertEquals('5678', $item2->getItemId());
+        $this->assertEquals('the second title', $item2->getTitle());
+        $this->assertEquals('the second description', $item2->getDescription());
+        $this->assertEquals('the second author', $item2->getAuthor());
+        $this->assertEquals(666, $item2->getScore());
+        $this->assertInstanceOf('DateTime', $item2->getDateCreated());
+    }
+
     public function testDeleteItem()
     {
         // Set mocked response
