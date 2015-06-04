@@ -503,7 +503,7 @@ class Client extends GuzzleClient implements ClientInterface
      *
      * @param User|string $user a User model or userId
      * @param array $items an array of Item models
-     * @return Item[]
+     * @return ArrayCollection
      */
     public function rateSeveralItems($user, array $items)
     {
@@ -521,18 +521,13 @@ class Client extends GuzzleClient implements ClientInterface
         $response = $this->connect('POST', self::ITEM_RATE_LIST_ROUTE, [
             'json' => $data
         ]);
-        $contents = $response->getBody()->getContents();
-        $itemData = $this->serializer->deserialize($contents, 'array', 'json');
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
 
-        // Refresh the Item's list and return it
-        $items = [];
-        foreach ($itemData['items'] as $itemData) {
-            $item = new Item();
-            $item->fromArray($itemData);
-            $items[] = $item;
-        }
-
-        return $items;
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents['items'],
+            'array<Wonnova\SDK\Model\Item>',
+            'array'
+        ));
     }
 
     /**
