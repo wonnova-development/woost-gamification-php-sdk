@@ -499,6 +499,43 @@ class Client extends GuzzleClient implements ClientInterface
     }
 
     /**
+     * Rates an item increasing its score and setting the rate from certain user.
+     *
+     * @param User|string $user a User model or userId
+     * @param array $items an array of Item models
+     * @return Item[]
+     */
+    public function rateSeveralItems($user, array $items)
+    {
+        $data = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'itemsList' => [],
+        ];
+
+        foreach ($items as $item) {
+            if ($item instanceof Item) {
+                $data['itemsList'][] = $item->toArray();
+            }
+        }
+
+        $response = $this->connect('POST', self::ITEM_RATE_LIST_ROUTE, [
+            'json' => $data
+        ]);
+        $contents = $response->getBody()->getContents();
+        $itemData = $this->serializer->deserialize($contents, 'array', 'json');
+
+        // Refresh the Item's list and return it
+        $items = [];
+        foreach ($itemData['items'] as $itemData) {
+            $item = new Item();
+            $item->fromArray($itemData);
+            $items[] = $item;
+        }
+
+        return $items;
+    }
+
+    /**
      * Deletes certain item
      *
      * @param Item|string $item an Item model or itemId
