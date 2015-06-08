@@ -12,7 +12,7 @@ Woost SDK for PHP. Use [Woost](http://www.wonnova.com/woost)'s RESTful API direc
 
 The preferred installation method is [composer](https://getcomposer.com). Just run this in your project in order to update your `composer.json` file and install your dependencies.
 
-    composer require wonnova/woost-gamification-php-sdk ~0.1
+    composer require wonnova/woost-gamification-php-sdk
     
 If you never worked with composer, take a look at its [documentation](https://getcomposer.org/doc/).
 
