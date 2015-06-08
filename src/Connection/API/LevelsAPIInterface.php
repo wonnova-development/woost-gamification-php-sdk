@@ -13,7 +13,8 @@ use Wonnova\SDK\Model\User;
 interface LevelsAPIInterface
 {
     const LEVELS_ROUTE      = '/rest/levels';
-    const USER_LEVEL_ROUTE  = '/rest/levels/users/%userId%/scenarios/%scenarioCode%';
+    const USER_LEVEL_WITH_SCENARIO_ROUTE  = '/rest/levels/users/%userId%/scenarios/%scenarioCode%';
+    const USER_LEVEL_ROUTE  = '/rest/levels/users/%userId%';
     const LEVEL_IMAGE_ROUTE = '/rest/levels/%levelId%/image';
 
     /**
@@ -27,8 +28,8 @@ interface LevelsAPIInterface
      * Returns the level of a user in certain scenario
      *
      * @param User|string $user A User model or userId
-     * @param string $scenarioCode
+     * @param string|null $scenarioCode
      * @return Level
      */
-    public function getUserLevelInScenario($user, $scenarioCode);
+    public function getUserLevelInScenario($user, $scenarioCode = null);
 }

@@ -15,7 +15,6 @@
             "progress": 100,
             "questSteps": [
                 {
-                    "id": "270",
                     "type": "badge",
                     "code": null,
                     "name": "Medalla",
@@ -23,7 +22,6 @@
                     "completed": true
                 },
                 {
-                    "id": "1",
                     "type": "quest",
                     "code": "QUEST_TEST1",
                     "name": "Fill profile",
@@ -39,7 +37,6 @@
             "progress": 50,
             "questSteps": [
                 {
-                    "id": "3",
                     "type": "badge",
                     "code": null,
                     "name": "First occurrenced",
@@ -47,7 +44,6 @@
                     "completed": true
                 },
                 {
-                    "id": "844",
                     "type": "action",
                     "code": "DOUBLE_LOGIN",
                     "name": "Acción",
@@ -70,7 +66,6 @@
             "progress": 25,
             "questSteps": [
                 {
-                    "id": "3",
                     "type": "badge",
                     "code": null,
                     "name": "First occurrenced",
@@ -78,7 +73,6 @@
                     "completed": true
                 },
                 {
-                    "id": "844",
                     "type": "action",
                     "code": "DOUBLE_LOGIN",
                     "name": "An Action",

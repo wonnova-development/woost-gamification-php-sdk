@@ -10,6 +10,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Wonnova\SDK\Auth\Credentials;
 use Wonnova\SDK\Connection\Client;
 use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Action;
 use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\User;
 
@@ -237,13 +238,30 @@ class ClientTest extends TestCase
         }
     }
 
+    public function testGetUserLevel()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserLevelInScenario.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $level = $this->client->getUserLevelInScenario('1234');
+        $this->assertEquals('LEARNER', $level->getCode());
+        $this->assertEquals(true, $level->getGeneratesNotification());
+        $this->assertEquals('default.png', $level->getImageUrl());
+        $this->assertInstanceOf('DateTime', $level->getDateCreated());
+        $this->assertInstanceOf('Wonnova\SDK\Model\Badge', $level->getBadge());
+        $this->assertEquals('The badge', $level->getBadge()->getName());
+        $this->assertInstanceOf('Wonnova\SDK\Model\Scenario', $level->getScenario());
+        $this->assertEquals('VCM', $level->getScenario()->getName());
+    }
+
     public function testGetUserLevelInScenario()
     {
         // Set mocked response
         $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserLevelInScenario.json', 'r'));
         $this->subscriber->addResponse(new Response(200, [], $body));
 
-        $level = $this->client->getUserLevelInScenario('', '');
+        $level = $this->client->getUserLevelInScenario('1234', 'GENERAL');
         $this->assertEquals('LEARNER', $level->getCode());
         $this->assertEquals(true, $level->getGeneratesNotification());
         $this->assertEquals('default.png', $level->getImageUrl());
@@ -325,6 +343,34 @@ class ClientTest extends TestCase
         $this->assertNull($item->getAuthor());
         $this->assertEquals(2400, $item->getScore());
         $this->assertInstanceOf('DateTime', $item->getDateCreated());
+    }
+
+    public function testRateSeveralItems()
+    {
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/rateSeveralItems.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $item1 = new Item();
+        $item2 = new Item();
+
+        $items = $this->client->rateSeveralItems('1234', [$item1, $item2]);
+
+        $item1 = $items[0];
+        $this->assertEquals('1234', $item1->getItemId());
+        $this->assertEquals('the title', $item1->getTitle());
+        $this->assertNull($item1->getDescription());
+        $this->assertNull($item1->getAuthor());
+        $this->assertEquals(2400, $item1->getScore());
+        $this->assertInstanceOf('DateTime', $item1->getDateCreated());
+
+        $item2 = $items[1];
+        $this->assertEquals('5678', $item2->getItemId());
+        $this->assertEquals('the second title', $item2->getTitle());
+        $this->assertEquals('the second description', $item2->getDescription());
+        $this->assertEquals('the second author', $item2->getAuthor());
+        $this->assertEquals(666, $item2->getScore());
+        $this->assertInstanceOf('DateTime', $item2->getDateCreated());
     }
 
     public function testDeleteItem()
@@ -465,6 +511,125 @@ class ClientTest extends TestCase
         ], $request);
     }
 
+    public function testNotifySeveralActionsAsString()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+        $this->client->notifySeveralActions('12345', ['LOGIN', 'SIGNUP']);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                ['actionCode' => 'LOGIN'],
+                ['actionCode' => 'SIGNUP'],
+            ]
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsAsActionClass()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+
+        $actionLogin = new Action();
+        $actionLogin->setActionCode('LOGIN');
+
+        $actionSignup = new Action();
+        $actionSignup->setActionCode('SIGNUP');
+
+        $this->client->notifySeveralActions('12345', [$actionLogin, $actionSignup]);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                ['actionCode' => 'LOGIN'],
+                ['actionCode' => 'SIGNUP'],
+            ]
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsWIthItem()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+
+        $item = new Item();
+        $item->setItemId('the-item');
+        $actionLogin = new Action();
+        $actionLogin->setActionCode('LOGIN')
+        ->setItem($item);
+
+        $actionSignup = new Action();
+        $actionSignup->setActionCode('SIGNUP');
+
+        $this->client->notifySeveralActions('12345', [$actionLogin, $actionSignup]);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                [
+                    'actionCode' => 'LOGIN',
+                    'item' => [
+                        'id' => 'the-item',
+                        'title' => null,
+                        'description' => null,
+                        'author' => null,
+                    ]
+                ],
+                ['actionCode' => 'SIGNUP'],
+            ],
+        ], $request);
+    }
+
+    public function testNotifySeveralActionsWithCategories()
+    {
+        $history = new History();
+        $this->client->getEmitter()->attach($history);
+
+        $this->subscriber->addResponse(new Response(200, [], new Stream(fopen('data://text/plain,[]', 'r'))));
+
+        $item = new Item();
+        $item->setItemId('the-item');
+        $actionLogin = new Action();
+        $actionLogin->setActionCode('LOGIN')
+            ->setItem($item);
+
+        $actionSignup = new Action();
+        $actionSignup->setActionCode('SIGNUP')
+            ->setCategories(['foo', 'bar']);
+
+        $this->client->notifySeveralActions('12345', [$actionLogin, $actionSignup]);
+        $contents = $history->getLastRequest()->getBody()->__toString();
+        $request = json_decode($contents, true);
+        $this->assertEquals([
+            'userId' => '12345',
+            'actions' => [
+                [
+                    'actionCode' => 'LOGIN',
+                    'item' => [
+                        'id' => 'the-item',
+                        'title' => null,
+                        'description' => null,
+                        'author' => null,
+                    ]
+                ],
+                [
+                    'actionCode' => 'SIGNUP',
+                    'categories' => ['foo', 'bar'],
+                ],
+            ],
+        ], $request);
+    }
+
     public function testNotifyInteraction()
     {
         $history = new History();
@@ -539,6 +704,26 @@ class ClientTest extends TestCase
 
         $expected = 7;
         $this->assertEquals($expected, $this->client->getUserActionOccurrences('', ''));
+    }
+
+    public function testGetUserLastUpdates()
+    {
+        $lastUpdatesData = json_decode(
+            file_get_contents(__DIR__ . '/../dummy_response_data/getUserLastUpdates.json'),
+            true
+        );
+        $lastUpdatesData = $lastUpdatesData['lastUpdates'];
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUserLastUpdates.json', 'r'));
+        $this->subscriber->addResponse(new Response(200, [], $body));
+
+        $lastUpdates = $this->client->getUserLastUpdates('', 4);
+        $this->assertCount(4, $lastUpdates);
+        foreach ($lastUpdates as $key => $update) {
+            $this->assertEquals($lastUpdatesData[$key]['text'], $update->getText());
+            $this->assertInstanceOf('DateTime', $update->getDate());
+            $this->assertEquals($lastUpdatesData[$key]['type'], $update->getType());
+        }
     }
 
     public function testExpiredAuthTokenPerformsAuthentication()

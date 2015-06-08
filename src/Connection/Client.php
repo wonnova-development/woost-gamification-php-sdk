@@ -19,6 +19,7 @@ use Wonnova\SDK\Exception\UnauthorizedException;
 use Wonnova\SDK\Exception\ServerException;
 use Wonnova\SDK\Http\Route;
 use Wonnova\SDK\Model\Achievement;
+use Wonnova\SDK\Model\Action;
 use Wonnova\SDK\Model\Badge;
 use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\Level;
@@ -26,6 +27,7 @@ use Wonnova\SDK\Model\Notification;
 use Wonnova\SDK\Model\Quest;
 use Wonnova\SDK\Model\QuestStep;
 use Wonnova\SDK\Model\Team;
+use Wonnova\SDK\Model\Update;
 use Wonnova\SDK\Model\User;
 use GuzzleHttp\Client as GuzzleClient;
 use Wonnova\SDK\Serializer\SerializerFactory;
@@ -406,17 +408,24 @@ class Client extends GuzzleClient implements ClientInterface
      * Returns the level of a user in certain scenario
      *
      * @param User|string $user A User model or userId
-     * @param string $scenarioCode
+     * @param string|null $scenarioCode
      * @return Level
      */
-    public function getUserLevelInScenario($user, $scenarioCode)
+    public function getUserLevelInScenario($user, $scenarioCode = null)
     {
         $userId = $user instanceof User ? $user->getUserId() : $user;
-
-        $response = $this->connect('GET', new Route(self::USER_LEVEL_ROUTE, [
+        $route = self::USER_LEVEL_ROUTE;
+        $options = [
             'userId' => $userId,
-            'scenarioCode' => $scenarioCode
-        ]));
+        ];
+
+        if (! empty($scenarioCode)) {
+            $route = self::USER_LEVEL_WITH_SCENARIO_ROUTE;
+            $options['scenarioCode'] = $scenarioCode;
+        }
+
+        $response = $this->connect('GET', new Route($route, $options));
+
         $contents = $response->getBody()->getContents();
         $contents = $this->serializer->deserialize($contents, 'array', 'json');
         return $this->serializer->deserialize($contents['level'], 'Wonnova\SDK\Model\Level', 'array');
@@ -497,6 +506,38 @@ class Client extends GuzzleClient implements ClientInterface
     }
 
     /**
+     * Rates an item increasing its score and setting the rate from certain user.
+     *
+     * @param User|string $user a User model or userId
+     * @param array $items an array of Item models
+     * @return ArrayCollection
+     */
+    public function rateSeveralItems($user, array $items)
+    {
+        $data = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'itemsList' => [],
+        ];
+
+        foreach ($items as $item) {
+            if ($item instanceof Item) {
+                $data['itemsList'][] = $item->toArray();
+            }
+        }
+
+        $response = $this->connect('POST', self::ITEM_RATE_LIST_ROUTE, [
+            'json' => $data
+        ]);
+        $contents = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
+
+        return new ArrayCollection($this->serializer->deserialize(
+            $contents['items'],
+            'array<Wonnova\SDK\Model\Item>',
+            'array'
+        ));
+    }
+
+    /**
      * Deletes certain item
      *
      * @param Item|string $item an Item model or itemId
@@ -574,6 +615,40 @@ class Client extends GuzzleClient implements ClientInterface
 
         // Perform request
         $this->connect('POST', self::ACTION_NOTIFICATION_ROUTE, [
+            'json' => $requestData
+        ]);
+    }
+
+    /**
+     * Performs an action notification from certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param array $actions array of Action objects or strings
+     * @return void
+     */
+    public function notifySeveralActions($user, array $actions)
+    {
+        // Prepare request body
+        $requestData = [
+            'userId' => $user instanceof User ? $user->getUserId() : $user,
+            'actions' => [],
+        ];
+
+        foreach ($actions as $action) {
+
+            if (is_string($action)) {
+                $actionCode = $action;
+                $action = new Action();
+                $action->setActionCode($actionCode);
+            }
+
+            if ($action instanceof Action) {
+                $requestData['actions'][] = $action->toArray();
+            }
+        }
+
+        // Perform request
+        $this->connect('POST', self::ACTION_NOTIFY_SEVERAL_ROUTE, [
             'json' => $requestData
         ]);
     }
@@ -664,5 +739,24 @@ class Client extends GuzzleClient implements ClientInterface
         }
 
         return $responseData;
+    }
+
+    /**
+     * Returns the list of most recent updates for certain user
+     *
+     * @param User|string $user A User model or userId
+     * @param int $maxCount
+     * @return Collection|Update[]
+     */
+    public function getUserLastUpdates($user, $maxCount = null)
+    {
+        $queryParams = [];
+        if (is_int($maxCount)) {
+            $queryParams['minCount'] = $maxCount;
+        }
+        $route = new Route(self::USER_LAST_UPDATES, [
+            'userId' => $user instanceof User ? $user->getUserId() : $user
+        ], $queryParams);
+        return $this->getResourceCollection($route, 'lastUpdates', 'Wonnova\SDK\Model\Update');
     }
 }

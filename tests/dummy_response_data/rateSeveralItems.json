@@ -1,0 +1,20 @@
+{
+    "items": [
+        {
+            "id": "1234",
+            "title": "the title",
+            "description": null,
+            "author": null,
+            "score": 2400,
+            "dateCreated": "2015-02-28T16:49:46+0100"
+        },
+        {
+            "id": "5678",
+            "title": "the second title",
+            "description": "the second description",
+            "author": "the second author",
+            "score": 666,
+            "dateCreated": "2015-04-28T16:49:46+0100"
+        }
+    ]
+}

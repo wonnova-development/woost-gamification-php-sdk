@@ -1,6 +1,7 @@
 <?php
 namespace Wonnova\SDK\Connection\API;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Wonnova\SDK\Model\Item;
 use Wonnova\SDK\Model\User;
@@ -14,6 +15,7 @@ interface ItemsAPIInterface
 {
     const ITEMS_LEADERBOARD_ROUTE   = '/rest/items/leaderboard';
     const ITEM_RATE_ROUTE           = '/rest/items/rate';
+    const ITEM_RATE_LIST_ROUTE      = '/rest/items/rate-list';
     const ITEM_ROUTE                = '/rest/items/%itemId%';
     const ITEM_RESET_SCORE_ROUTE    = '/rest/items/%itemId%/reset-score';
 
@@ -34,6 +36,15 @@ interface ItemsAPIInterface
      * @return Item
      */
     public function rateItem($user, $item, $score = 0);
+
+    /**
+     * Rates an item increasing its score and setting the rate from certain user.
+     *
+     * @param User|string $user a User model or userId
+     * @param array $items an array of Item models
+     * @return ArrayCollection
+     */
+    public function rateSeveralItems($user, array $items);
 
     /**
      * Deletes certain item
