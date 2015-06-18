@@ -799,7 +799,7 @@ class ClientTest extends TestCase
     public function testCachedTokenDoNotPerformAditionalRequests()
     {
         $cache = new ArrayCache();
-        $cache->save(Client::TOKEN_KEY, 'foobar');
+        $cache->save(sprintf('%s_123', Client::TOKEN_KEY), 'foobar');
         $this->client = new Client(new Credentials('123'), 'es', $cache);
 
         $history = new History();
