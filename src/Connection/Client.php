@@ -62,6 +62,10 @@ class Client extends GuzzleClient implements ClientInterface
      * @var TokenInterface
      */
     protected $token;
+    /**
+     * @var string
+     */
+    protected $tokenCacheKey;
 
     /**
      * @param CredentialsInterface $credentials
@@ -91,9 +95,10 @@ class Client extends GuzzleClient implements ClientInterface
         $this->cache = $cache ?: new FilesystemCache(sys_get_temp_dir());
 
         // Initialize the token if it exists in cache
-        if ($this->cache->contains(self::TOKEN_KEY)) {
+        $this->tokenCacheKey = sprintf('%s_%s', self::TOKEN_KEY, $credentials->getKey());
+        if ($this->cache->contains($this->tokenCacheKey)) {
             $this->token = new Token();
-            $this->token->setAccessToken($this->cache->fetch(self::TOKEN_KEY));
+            $this->token->setAccessToken($this->cache->fetch($this->tokenCacheKey));
         }
 
     }
@@ -121,7 +126,7 @@ class Client extends GuzzleClient implements ClientInterface
         $options = $this->processOptionsWithDefaults($options);
         $response = $this->send($this->createRequest($method, $route, $options));
         $code = $response->getStatusCode();
-        if ($code === 200) {
+        if (intval($code) === 200) {
             return $response;
         }
 
@@ -186,7 +191,7 @@ class Client extends GuzzleClient implements ClientInterface
     private function resetToken()
     {
         $this->token = null;
-        $this->cache->delete(self::TOKEN_KEY);
+        $this->cache->delete($this->tokenCacheKey);
     }
 
     /**
@@ -202,7 +207,7 @@ class Client extends GuzzleClient implements ClientInterface
             'Wonnova\SDK\Auth\Token',
             'json'
         );
-        $this->cache->save(self::TOKEN_KEY, $this->token->getAccessToken());
+        $this->cache->save($this->tokenCacheKey, $this->token->getAccessToken());
     }
 
     /**

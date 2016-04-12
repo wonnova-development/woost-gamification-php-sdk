@@ -799,7 +799,7 @@ class ClientTest extends TestCase
     public function testCachedTokenDoNotPerformAditionalRequests()
     {
         $cache = new ArrayCache();
-        $cache->save(Client::TOKEN_KEY, 'foobar');
+        $cache->save(sprintf('%s_123', Client::TOKEN_KEY), 'foobar');
         $this->client = new Client(new Credentials('123'), 'es', $cache);
 
         $history = new History();
@@ -813,5 +813,16 @@ class ClientTest extends TestCase
 
         $this->client->getUsers();
         $this->assertCount(1, $history);
+    }
+
+    public function testStatusAsStringIsParsed()
+    {
+        $userData = json_decode(file_get_contents(__DIR__ . '/../dummy_response_data/getUser.json'), true);
+        // Set mocked response
+        $body = new Stream(fopen(__DIR__ . '/../dummy_response_data/getUser.json', 'r'));
+        $this->subscriber->addResponse(new Response('200', [], $body));
+
+        $user = $this->client->getUser($userData['userId']);
+        $this->assertInstanceOf('Wonnova\SDK\Model\User', $user);
     }
 }
