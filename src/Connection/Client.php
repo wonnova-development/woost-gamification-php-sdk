@@ -126,7 +126,7 @@ class Client extends GuzzleClient implements ClientInterface
         $options = $this->processOptionsWithDefaults($options);
         $response = $this->send($this->createRequest($method, $route, $options));
         $code = $response->getStatusCode();
-        if ($code === 200) {
+        if (intval($code) === 200) {
             return $response;
         }
 
